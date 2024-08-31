@@ -40,7 +40,9 @@ export default function App({ Component, pageProps }: AppProps) {
     </Navbar >
     <Container>
       <Component {...pageProps} classList="mt-2" />
-      <div><center>{t("footer")}</center></div>
+      <div className="mt-3">
+        <center>{t("footer")}</center>
+      </div>
     </Container>
   </>;
 }

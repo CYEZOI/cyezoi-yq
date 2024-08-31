@@ -18,6 +18,9 @@
     "react-bootstrap-icons": "^1.11.4",
     "react-dom": "^18",
     "react-i18next": "^15.0.1",
+    "sequelize": "^6.37.3",
+    "sqlite3": "^5.1.7",
+    "swr": "^2.2.5",
     "yup": "^1.4.0"
   },
   "devDependencies": {

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
@@ -6,25 +6,25 @@ import * as yup from "yup";
 import { Formik } from "formik";
 import i18n from "./_i18n";
 import Head from "next/head";
-import { Col, Row } from "react-bootstrap";
+import { Col, Row, Table } from "react-bootstrap";
+import { API } from "./_api";
 
-export default function login() {
+export default function finance() {
   const { t } = i18n;
   return (
     <>
       <Head>
-        <title>{t("finance")} - {t("brand")}</title>
+        <title>{t("finance") + " - " + t("brand")}</title>
       </Head>
       <Formik
         validationSchema={yup.object().shape({
           money: yup.number().required().min(-1000).max(1000),
           detail: yup.string().max(64),
         })}
-        onSubmit={(APIParams: object) => {
-          console.log(APIParams);
-          // API.Post("users/login", { APIParams }).then((response) => {
-          //   // ...
-          // });
+        onSubmit={(params: object) => {
+          API.Post("finance", { params: params }).then((response) => {
+            // ...
+          });
         }} initialValues={{ money: 0, detail: t("unknown"), }}
       >
         {({ handleSubmit, handleChange, handleBlur, values, touched, errors }) => (
@@ -46,9 +46,41 @@ export default function login() {
           </Form>
         )}
       </Formik>
+      <Table>
+        <thead>
+          <tr>
+            <th>{t("id")}</th>
+            <th>{t("time")}</th>
+            <th>{t("amount")}</th>
+            <th>{t("reason")}</th>
+            <th>{t("operation")}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {records.map((record: object) => (
+            <tr key={record["id"]}>
+              <td>{record["id"]}</td>
+              <td>{new Date(record["time"] * 1000).toLocaleString()}</td>
+              <td>{record["money"]}</td>
+              <td>{record["detail"]}</td>
+              <td><Button onClick={() => {
+                API.Delete("finance", { id: record["id"] }).then((response) => {
+                  // ...
+                });
+              }} variant="danger" size="sm">{t("delete")}</Button></td>
+            </tr>
+          ))}
+        </tbody>
+      </Table>
     </>
   );
 }
 
-
-// TO-DO: https://stackoverflow.com/questions/49389202/yup-doesnt-work-properly-with-i18n
+export async function getStaticProps() {
+  const res = await API.Get("finance");
+  return {
+    props: {
+      records: res["records"],
+    },
+  };
+}
