@@ -28,8 +28,7 @@ export default async function handler(
     });
   }
   else if (req.method == "DELETE") {
-    console.log(req.url);
-    const request: URLSearchParams = new URLSearchParams(req.url?.search || "");
+    const request: URLSearchParams = new URLSearchParams(new URL(req.url!, "http://localhost").search);
     await financeModule.destroy({
       where: {
         id: request.get("id"),
