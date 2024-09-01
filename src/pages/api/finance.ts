@@ -1,7 +1,7 @@
-import { API, APIRequest, APIResponse } from "@/pages/_api";
+import { API, APIRequest, APIResponse } from "@/api";
 import type { NextApiRequest, NextApiResponse } from "next";
-import { financeModule } from "./_database";
-import i18n from "../_i18n";
+import { financeModule } from "@/database";
+import i18n from "@/i18n";
 
 export default async function handler(
   req: NextApiRequest,
@@ -31,7 +31,7 @@ export default async function handler(
     const request: URLSearchParams = new URLSearchParams(new URL(req.url!, "http://localhost").search);
     await financeModule.destroy({
       where: {
-        id: request.get("id"),
+        financeId: request.get("financeId"),
       },
     }).then(() => {
       API.success(res);
@@ -47,7 +47,7 @@ export default async function handler(
       detail: request.params.detail,
     }, {
       where: {
-        id: request.params.id,
+        financeId: request.params.financeId,
       },
     }).then(() => {
       API.success(res);

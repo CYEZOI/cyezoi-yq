@@ -9,12 +9,12 @@ export default function error() {
   return (
     <>
       <Head>
-        <title>{t("error") + " - " + t("brand")}</title>
+        <title>{t("404") + " - " + t("brand")}</title>
       </Head>
       <div>
         <Alert variant="danger">
-          <Alert.Heading>{t("error")}</Alert.Heading>
-          <p>{t("errorDescription")}</p>
+          <Alert.Heading>{t("404")}</Alert.Heading>
+          <p>{t("404Description")}</p>
         </Alert>
       </div>
     </>

@@ -1,4 +1,6 @@
-import * as database from "./_database";
+import { NextApiRequest, NextApiResponse } from "next";
+import * as database from "@/database";
+import { API, APIResponse } from "@/api";
 
 const Data = {
     "roles": [
@@ -26,14 +28,14 @@ const Data = {
         { "name": "丁子轩", "id": 7, "gender": true, "roles": [], "groups": [{ "id": 18, "leader": false, },], },
         { "name": "韩明砡", "id": 8, "gender": true, "roles": [], "groups": [{ "id": 13, "leader": true, },], },
         { "name": "侯宇彤", "id": 9, "gender": true, "roles": [], "groups": [{ "id": 16, "leader": false, },], },
-        { "name": "胡东昊", "id": 12, "gender": true, "roles": [], "groups": [{ "id": 15, "leader": false, },], },
-        { "name": "惠雨辰", "id": 15, "gender": true, "roles": [], "groups": [{ "id": 14, "leader": false, },], },
-        { "name": "姜子米", "id": 17, "gender": true, "roles": [], "groups": [], },
-        { "name": "乐思源", "id": 14, "gender": true, "roles": [], "groups": [{ "id": 18, "leader": false, },], },
-        { "name": "李昊童", "id": 18, "gender": true, "roles": [3,], "groups": [{ "id": 12, "leader": false, },], },
-        { "name": "李思汗", "id": 13, "gender": true, "roles": [], "groups": [{ "id": 15, "leader": false, },], },
+        { "name": "胡东昊", "id": 10, "gender": true, "roles": [], "groups": [{ "id": 15, "leader": false, },], },
+        { "name": "惠雨辰", "id": 11, "gender": true, "roles": [], "groups": [{ "id": 14, "leader": false, },], },
+        { "name": "姜子米", "id": 12, "gender": true, "roles": [], "groups": [], },
+        { "name": "乐思源", "id": 13, "gender": true, "roles": [], "groups": [{ "id": 18, "leader": false, },], },
+        { "name": "李昊童", "id": 14, "gender": true, "roles": [3,], "groups": [{ "id": 12, "leader": false, },], },
+        { "name": "李思汗", "id": 15, "gender": true, "roles": [], "groups": [{ "id": 15, "leader": false, },], },
         { "name": "李彦灿", "id": 16, "gender": true, "roles": [2,], "groups": [{ "id": 18, "leader": true, },], },
-        { "name": "林天辰", "id": 11, "gender": true, "roles": [], "groups": [{ "id": 11, "leader": false, },], },
+        { "name": "林天辰", "id": 17, "gender": true, "roles": [], "groups": [{ "id": 11, "leader": false, },], },
         { "name": "刘云徽", "id": 18, "gender": true, "roles": [], "groups": [{ "id": 16, "leader": false, },], },
         { "name": "刘子毅", "id": 19, "gender": true, "roles": [], "groups": [{ "id": 16, "leader": false, },], },
         { "name": "陆一凡", "id": 20, "gender": true, "roles": [], "groups": [{ "id": 14, "leader": false, },], },
@@ -58,15 +60,18 @@ const Data = {
     ],
 };
 
-export default async function handler(req, res) {
+export default async function handler(
+    req: NextApiRequest,
+    res: NextApiResponse<APIResponse>,
+) {
     for (const role of Data.roles) {
-        await database.roleModule.create({ id: role.id, name: role.name });
+        await database.roleModule.create({ roleId: role.id, roleName: role.name });
     }
     for (const group of Data.groups) {
-        await database.groupModule.create({ id: group.id, name: group.name });
+        await database.groupModule.create({ groupId: group.id, groupName: group.name });
     }
     for (const person of Data.people) {
-        await database.studentModule.create({ id: person.id, name: person.name, gender: person.gender });
+        await database.studentModule.create({ studentId: person.id, studentName: person.name, gender: person.gender });
         for (const role of person.roles) {
             await database.roleMemberModule.create({ role: role, student: person.id });
             await database.privilegeRecordModule.create({ date: "20240829", student: person.id, io: true, type: "role", value: role, reason: "班主任评选" });
@@ -76,5 +81,5 @@ export default async function handler(req, res) {
             await database.privilegeRecordModule.create({ date: "20240829", student: person.id, io: true, type: "group", value: group.id, reason: "选择加入组" });
         }
     }
-    res.status(200).json({ message: "Imported successfully" });
+    API.success(res, "", { message: "Imported successfully" });
 }

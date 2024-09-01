@@ -8,7 +8,7 @@ export const sequelize = new Sequelize({
 export const financeModule = sequelize.define(
     "finance",
     {
-        id: {
+        financeId: {
             type: DataTypes.INTEGER,
             primaryKey: true,
             autoIncrement: true,
@@ -27,11 +27,11 @@ export const financeModule = sequelize.define(
 export const studentModule = sequelize.define(
     "student",
     {
-        id: {
+        studentId: {
             type: DataTypes.INTEGER,
             primaryKey: true,
         },
-        name: {
+        studentName: {
             type: DataTypes.STRING,
             allowNull: false,
         },
@@ -45,11 +45,11 @@ export const studentModule = sequelize.define(
 export const groupModule = sequelize.define(
     "group",
     {
-        id: {
+        groupId: {
             type: DataTypes.INTEGER,
             primaryKey: true,
         },
-        name: {
+        groupName: {
             type: DataTypes.STRING,
             allowNull: false,
         },
@@ -75,11 +75,11 @@ export const groupMemberModule = sequelize.define(
 export const roleModule = sequelize.define(
     "role",
     {
-        id: {
+        roleId: {
             type: DataTypes.INTEGER,
             primaryKey: true,
         },
-        name: {
+        roleName: {
             type: DataTypes.STRING,
             allowNull: false,
         },
@@ -101,7 +101,7 @@ export const roleMemberModule = sequelize.define(
 export const privilegeRecordModule = sequelize.define(
     "privilegeRecord",
     {
-        id: {
+        privilegeRecordId: {
             type: DataTypes.INTEGER,
             primaryKey: true,
             autoIncrement: true,

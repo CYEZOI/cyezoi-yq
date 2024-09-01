@@ -1,15 +1,15 @@
 import { NextApiResponse } from "next";
 
 export type APIData = {
-    params?: object;
+    params?: any;
 };
 export type APIRequest = {
-    params: object;
+    params: any;
 };
 export type APIResponse = {
     success: boolean;
     message: string;
-    result: object;
+    result: any;
 };
 
 export class API {
@@ -51,6 +51,7 @@ export class API {
     static async Put(url: string, data: APIData = {}): Promise<object> { return API.request_body("PUT", url, data); }
     static async Delete(url: string, data: Record<string, string> = {}): Promise<object> { return API.request_url("DELETE", url, data); }
     static success(res: NextApiResponse<APIResponse>, message: string = "", result: object = {}): void {
+        if (res.writableEnded) return;
         res.status(200).json({
             success: true,
             message,
@@ -59,6 +60,7 @@ export class API {
         res.end();
     }
     static failure(res: NextApiResponse<APIResponse>, message: string = ""): void {
+        if (res.writableEnded) return;
         res.status(200).json({
             success: false,
             message,

@@ -3,10 +3,9 @@ import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import NavDropdown from "react-bootstrap/NavDropdown";
 import { Translate } from "react-bootstrap-icons";
-import i18n from "./_i18n";
+import i18n from "@/i18n";
 import "bootstrap/dist/css/bootstrap.css";
 import { useEffect, useState } from "react";
-import Head from "next/head";
 import { Container } from "react-bootstrap";
 
 export default function App({ Component, pageProps }: AppProps) {
@@ -20,8 +19,9 @@ export default function App({ Component, pageProps }: AppProps) {
   }
 
   useEffect(() => {
-    import("bootstrap/dist/js/bootstrap.bundle");
-    handleLanguage(localStorage.getItem("language"));
+    typeof document !== undefined &&
+      // import("react-bootstrap/dist/react-bootstrap");
+      handleLanguage(localStorage.getItem("language") || "en");
   });
 
   return <>

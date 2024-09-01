@@ -4,61 +4,85 @@ import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
 import * as yup from "yup";
 import { Formik } from "formik";
-import i18n from "./_i18n";
+import i18n from "@/i18n";
 import Head from "next/head";
-import { Badge, Col, Row, Table } from "react-bootstrap";
-import { API } from "./_api";
+import { Badge, Col, Placeholder, Row, Table } from "react-bootstrap";
+import { API } from "@/api";
 import useSWR from "swr";
 
 export default function student() {
   const { t } = i18n;
-  const { data, error, mutate } = useSWR("student", API.Get);
-  if (error) {
+
+  const { data: studentData, error: studentError } = useSWR("student", API.Get);
+  if (studentError) {
     // handle error
   }
-
-  var newData = {
-    "student": [],
-    "group": {},
-    "role": {},
+  const studentDataProvider = studentData as {
+    student: Array<{
+      studentId: number;
+      studentName: string;
+      gender: boolean;
+    }>;
   };
-  if (data) {
-    for (let group in data["group"]) {
-      newData["group"][data["group"][group]["id"]] = data["group"][group]["name"];
-    }
-    for (let role in data["role"]) {
-      newData.role[data["role"][role]["id"]] = data["role"][role]["name"];
-    }
-    for (let student in data["student"]) {
-      var studentData = {
-        "id": data["student"][student]["id"],
-        "name": data["student"][student]["name"],
-        "gender": data["student"][student]["gender"],
-        "group": [],
-        "role": [],
-      };
-      for (let group in data["groupMember"]) {
-        if (data["groupMember"][group]["student"] == data["student"][student]["id"]) {
-          var groupData = {
-            id: data["groupMember"][group]["group"],
-            name: newData.group[data["groupMember"][group]["group"]],
-            leader: data["groupMember"][group]["leader"],
-          };
-          studentData.group.push(groupData);
-        }
-      }
-      for (let role in data["roleMember"]) {
-        if (data["roleMember"][role]["student"] == data["student"][student]["id"]) {
-          var roleData = {
-            id: data["roleMember"][role]["role"],
-            name: newData.role[data["roleMember"][role]["role"]],
-          };
-          studentData.role.push(roleData);
-        }
-      }
-      newData.student.push(studentData);
-    }
+
+  const { data: groupMemberData, error: groupMemberError } = useSWR(() => {
+    const student = studentDataProvider.student.map(student => student.studentId).join(",");
+    return student ? "groupMember?student=" + student : null;
+  }, API.Get);
+  if (groupMemberError) {
+    // handle error
   }
+  const groupMemberDataProvider = groupMemberData as {
+    student: Array<{
+      studentId: number;
+      group: Array<{
+        groupId: number;
+        leader: boolean;
+      }>;
+    }>;
+  };
+
+  const { data: groupData, error: groupError } = useSWR(() => {
+    const group = groupMemberDataProvider ? groupMemberDataProvider.student.map(groupMember => groupMember.group.map(group => group.groupId)).join(",") : null;
+    return group ? "group?groupId=" + group : null;
+  }, API.Get);
+  if (groupError) {
+    // handle error
+  }
+  const groupDataProvider = groupData as {
+    group: Array<{
+      groupId: number;
+      groupName: string;
+    }>;
+  };
+
+  const { data: roleMemberData, error: roleMemberError } = useSWR(() => {
+    const student = studentDataProvider.student.map(student => student.studentId).join(",");
+    return student ? "roleMember?student=" + student : null;
+  }, API.Get);
+  if (roleMemberError) {
+    // handle error
+  }
+  const roleMemberDataProvider = roleMemberData as {
+    student: Array<{
+      studentId: number;
+      role: Array<number>;
+    }>;
+  };
+
+  const { data: roleData, error: roleError } = useSWR(() => {
+    const role = roleMemberDataProvider ? roleMemberDataProvider.student.map(roleMember => roleMember.role).join(",") : null;
+    return role ? "role?roleId=" + role : null;
+  }, API.Get);
+  if (roleError) {
+    // handle error
+  }
+  const roleDataProvider = roleData as {
+    role: Array<{
+      roleId: number;
+      roleName: string;
+    }>;
+  };
 
   return (
     <>
@@ -77,24 +101,28 @@ export default function student() {
           </tr>
         </thead>
         <tbody>
-          {data && newData["student"].map((student: object) => (
-            <tr key={student["id"]}>
-              <td>{student["id"]}</td>
-              <td>{student["name"]}</td>
-              <td>{student["gender"] ? "男" : "女"}</td>
+          {studentDataProvider && studentDataProvider.student.map((student: any) => (
+            <tr key={student["studentId"]}>
+              <td>{student["studentId"]}</td>
+              <td>{student["studentName"]}</td>
+              <td>{student["gender"] ? t("male") : t("female")}</td>
               <td>
-                {student["group"].map((group: object) => (
-                  <Badge key={group["id"]} bg={group["leader"] ? "primary" : "secondary"}>
-                    {group["name"]}
-                  </Badge>
-                ))}
+                {groupMemberDataProvider ? groupMemberDataProvider.student.filter(groupMember => groupMember.studentId == student["studentId"]).map(groupMember => (
+                  groupMember.group.map(group => (
+                    <Badge key={group.groupId} bg={group.leader ? "primary" : "secondary"}>
+                      {groupDataProvider ? groupDataProvider.group.filter(groupData => groupData.groupId == group.groupId).map(groupData => groupData.groupName) : t("group") + " " + group.groupId}
+                    </Badge>
+                  ))
+                )) : <Placeholder animation="wave"><Placeholder as={Col} xs={12} /></Placeholder>}
               </td>
               <td>
-                {student["role"].map((role: object) => (
-                  <Badge key={role["id"]}>
-                    {role["name"]}
-                  </Badge>
-                ))}
+                {roleMemberDataProvider ? roleMemberDataProvider.student.filter(roleMember => roleMember.studentId == student["studentId"]).map(roleMember => (
+                  roleMember.role.map(role => (
+                    <Badge key={role} bg="primary">
+                      {roleDataProvider ? roleDataProvider.role.filter(roleData => roleData.roleId == role).map(roleData => roleData.roleName) : t("role") + " " + role}
+                    </Badge>
+                  ))
+                )) : <Placeholder animation="wave"><Placeholder as={Col} xs={12} /></Placeholder>}
               </td>
             </tr>
           ))}

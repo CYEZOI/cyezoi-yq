@@ -1,8 +1,8 @@
 import React from "react";
-import i18n from "./_i18n";
+import i18n from "@/i18n";
 import Head from "next/head";
 
-export default function error() {
+export default function index() {
   const { t } = i18n;
 
   return (
