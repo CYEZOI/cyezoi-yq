@@ -12,7 +12,7 @@ export default function error() {
         <title>{t("404") + " - " + t("brand")}</title>
       </Head>
       <div>
-        <Alert variant="danger">
+        <Alert variant="warning">
           <Alert.Heading>{t("404")}</Alert.Heading>
           <p>{t("404Description")}</p>
         </Alert>

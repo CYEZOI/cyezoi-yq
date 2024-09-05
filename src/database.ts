@@ -133,4 +133,27 @@ export const privilegeRecordModule = sequelize.define(
     },
 );
 
+export const userModule = sequelize.define(
+    "user",
+    {
+        userId: {
+            type: DataTypes.INTEGER,
+            primaryKey: true,
+            autoIncrement: true,
+        },
+        username: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
+        password: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
+        studentId: {
+            type: DataTypes.INTEGER,
+            allowNull: true,
+        },
+    },
+);
+
 sequelize.sync();

@@ -64,6 +64,16 @@ export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse<APIResponse>,
 ) {
+    await database.roleModule.truncate();
+    await database.groupModule.truncate();
+    await database.studentModule.truncate();
+    await database.userModule.truncate();
+    await database.roleMemberModule.truncate();
+    await database.groupMemberModule.truncate();
+    await database.privilegeRecordModule.truncate();
+
+    await database.userModule.create({ username: "admin", password: "1!2@3#qQwWeE", studentId: 6 });
+
     for (const role of Data.roles) {
         await database.roleModule.create({ roleId: role.id, roleName: role.name });
     }

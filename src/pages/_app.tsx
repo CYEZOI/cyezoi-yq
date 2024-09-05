@@ -10,6 +10,7 @@ import { Container } from "react-bootstrap";
 
 export default function App({ Component, pageProps }: AppProps) {
   const [language, setLanguage] = useState("en");
+  const [studentName, setStudentName] = useState("");
   i18n.changeLanguage(language);
   const { t } = i18n;
   const handleLanguage = (language: string) => {
@@ -22,6 +23,8 @@ export default function App({ Component, pageProps }: AppProps) {
     typeof document !== undefined &&
       // import("react-bootstrap/dist/react-bootstrap");
       handleLanguage(localStorage.getItem("language") || "en");
+    typeof localStorage !== undefined &&
+      setStudentName(localStorage.getItem("studentName") || "");
   });
 
   return <>
@@ -38,11 +41,19 @@ export default function App({ Component, pageProps }: AppProps) {
             <Nav.Link href="/student">{t("student")}</Nav.Link>
             <Nav.Link href="/privilegeRecord">{t("privilegeRecord")}</Nav.Link>
             <Nav.Link href="/finance">{t("finance")}</Nav.Link>
+            <Nav.Link href="https://langningchen-my.sharepoint.com/:f:/p/langningchen/EmD2DAlbL8hDh8Lw_HIcwZABUBO5L2x3urA03YMPnL5gkQ">{t("resource")}</Nav.Link>
           </Nav>
-          <NavDropdown title={<span><Translate className="me-2" />{t("language")}</span>}>
+          <NavDropdown title={<span><Translate className="me-2" />{t("language")}</span>} className="me-4">
             <NavDropdown.Item onClick={() => { handleLanguage("en"); }}>English</NavDropdown.Item>
             <NavDropdown.Item onClick={() => { handleLanguage("zh"); }}>中文</NavDropdown.Item>
           </NavDropdown>
+          {
+            studentName == "" ?
+              <Nav.Link href="/login">{t("login")}</Nav.Link> :
+              <NavDropdown title={studentName}>
+                <NavDropdown.Item onClick={() => { localStorage.removeItem("studentName"); setStudentName(""); }}>{t("logout")}</NavDropdown.Item>
+              </NavDropdown>
+          }
         </Navbar.Collapse>
       </Container>
     </Navbar >

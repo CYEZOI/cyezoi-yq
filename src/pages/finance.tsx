@@ -32,7 +32,6 @@ export default function finance() {
         })}
         onSubmit={(params: object) => {
           API.Post("finance", { params: params }).then((response) => {
-            // ...
             mutate();
           });
         }} initialValues={{ money: 0, detail: "", }}
@@ -46,13 +45,13 @@ export default function finance() {
             <Row>
               <Col><InputGroup hasValidation>
                 <InputGroup.Text>{t("amount")}</InputGroup.Text>
-                <Form.Control placeholder={t("money")} name="money" value={valuesProvider["money"]} onBlur={handleBlur} onChange={handleChange} isInvalid={touchedProvider.money && errorsProvider.money == ""} />
+                <Form.Control placeholder={t("money")} name="money" value={valuesProvider["money"]} onBlur={handleBlur} onChange={handleChange} isInvalid={touchedProvider.money && errorsProvider.money != null} />
                 <InputGroup.Text>{t("RMB")}</InputGroup.Text>
                 <Form.Control.Feedback type="invalid">{errorsProvider.money}</Form.Control.Feedback>
               </InputGroup></Col>
               <Col><InputGroup hasValidation>
                 <InputGroup.Text>{t("reason")}</InputGroup.Text>
-                <Form.Control placeholder={t("detail")} name="detail" value={valuesProvider["detail"]} onBlur={handleBlur} onChange={handleChange} isInvalid={touchedProvider.detail && errorsProvider.detail == ""} />
+                <Form.Control placeholder={t("detail")} name="detail" value={valuesProvider["detail"]} onBlur={handleBlur} onChange={handleChange} isInvalid={touchedProvider.detail && errorsProvider.detail != null} />
                 <Form.Control.Feedback type="invalid">{errorsProvider.detail}</Form.Control.Feedback>
               </InputGroup></Col>
               <Col><Button type="submit">{t("addButton")}</Button></Col>
@@ -79,7 +78,6 @@ export default function finance() {
               <td>{record["detail"]}</td>
               <td><Button onClick={() => {
                 API.Delete("finance", { financeId: record["financeId"] }).then((response) => {
-                  // ...
                   mutate();
                 });
               }} variant="danger" size="sm">{t("delete")}</Button></td>
