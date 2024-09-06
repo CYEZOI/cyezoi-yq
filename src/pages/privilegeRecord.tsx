@@ -9,10 +9,7 @@ export default function privilegeRecord() {
   const { t } = i18n;
   const [page, setPage] = useState(1);
 
-  const { data: privilegeRecordData, error: privilegeRecordError } = useSWR("privilegeRecord?page=" + page, API.Get);
-  if (privilegeRecordError) {
-    // handle error
-  }
+  const { data: privilegeRecordData } = useSWR("privilegeRecord?page=" + page, API.SWRGet);
   const privilegeRecordDataProvider = privilegeRecordData as {
     privilegeRecord: Array<{
       id: number;
@@ -26,13 +23,10 @@ export default function privilegeRecord() {
     privilegeRecordSize: number;
   };
 
-  const { data: studentData, error: studentError } = useSWR(() => {
+  const { data: studentData } = useSWR(() => {
     const student = privilegeRecordDataProvider ? privilegeRecordDataProvider.privilegeRecord.map(record => record.student).join(",") : null;
     return student ? "student?student=" + student : null;
-  }, API.Get);
-  if (studentError) {
-    // handle error
-  }
+  }, API.SWRGet);
   const studentDataProvider = studentData as {
     student: Array<{
       studentId: number;
@@ -41,13 +35,10 @@ export default function privilegeRecord() {
     }>;
   };
 
-  const { data: groupData, error: groupError } = useSWR(() => {
+  const { data: groupData } = useSWR(() => {
     const group = privilegeRecordDataProvider ? privilegeRecordDataProvider.privilegeRecord.filter(record => record.type == "group").map(record => record.value).join(",") : null;
     return group ? "group?groupId=" + group : null;
-  }, API.Get);
-  if (groupError) {
-    // handle error
-  }
+  }, API.SWRGet);
   const groupDataProvider = groupData as {
     group: Array<{
       groupId: number;
@@ -55,13 +46,10 @@ export default function privilegeRecord() {
     }>;
   };
 
-  const { data: roleData, error: roleError } = useSWR(() => {
+  const { data: roleData } = useSWR(() => {
     const role = privilegeRecordDataProvider ? privilegeRecordDataProvider.privilegeRecord.filter(record => record.type == "role").map(record => record.value).join(",") : null;
     return role ? "role?roleId=" + role : null;
-  }, API.Get);
-  if (roleError) {
-    // handle error
-  }
+  }, API.SWRGet);
   const roleDataProvider = roleData as {
     role: Array<{
       roleId: number;

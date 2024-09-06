@@ -1,4 +1,4 @@
-import { API, APIResponse } from "@/api";
+import { API, APIRequest, APIResponse } from "@/api";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { roleMemberModule } from "@/database";
 import i18n from "@/i18n";
@@ -8,6 +8,7 @@ export default async function handler(
   res: NextApiResponse<APIResponse>,
 ) {
   if (req.method == "GET") {
+    i18n.changeLanguage(req.query.lang as string || "en");
     var studentIdList: Array<number> = [];
     if (req.query.studentIdList && typeof req.query.studentIdList == "string") {
       for (const studentId of req.query.studentIdList.split(",")) {
@@ -40,12 +41,14 @@ export default async function handler(
       console.error(error.name + "  " + error.message);
       API.failure(res, i18n.t("databaseError"));
     });
-    API.success(res, "", { student: studentData });
+    API.success(res, i18n.t("roleMemberGetSuccess"), { student: studentData });
   }
   else if (req.method == "POST") {
-    const student = req.body.params.student;
-    const role = req.body.params.role;
-    const leader = req.body.params.leader;
+    const request: APIRequest = req.body;
+    i18n.changeLanguage(request.lang || "en");
+    const student = request.params.student;
+    const role = request.params.role;
+    const leader = request.params.leader;
     if (typeof student != "number" || typeof role != "number" || typeof leader != "boolean") {
       API.failure(res, "Invalid parameters");
       return;
@@ -55,13 +58,14 @@ export default async function handler(
       role,
       leader,
     }).then(() => {
-      API.success(res);
+      API.success(res, i18n.t("roleMemberCreateSuccess"));
     }).catch((error: Error) => {
       console.error(error.name + "  " + error.message);
       API.failure(res, i18n.t("databaseError"));
     });
   }
   else if (req.method == "DELETE") {
+    i18n.changeLanguage(req.query.lang as string || "en");
     const student = req.body.params.student;
     const role = req.body.params.role;
     if (typeof student != "number" || typeof role != "number") {
@@ -74,13 +78,13 @@ export default async function handler(
         role,
       },
     }).then(() => {
-      API.success(res);
+      API.success(res, i18n.t("roleMemberDeleteSuccess"));
     }).catch((error: Error) => {
       console.error(error.name + "  " + error.message);
       API.failure(res, i18n.t("databaseError"));
     });
   }
   else {
-    API.failure(res, "Invalid method");
+    API.failure(res, i18n.t("invalidMethod"));
   }
 }

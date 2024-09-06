@@ -12,11 +12,7 @@ import useSWR from "swr";
 
 export default function finance() {
   const { t } = i18n;
-  const { data, error, mutate } = useSWR("finance", API.Get);
-  if (error) {
-    // handle error
-  }
-
+  const { data, mutate } = useSWR("finance", API.SWRGet);
   const dataProvider = data as { records: any[] };
 
   return (

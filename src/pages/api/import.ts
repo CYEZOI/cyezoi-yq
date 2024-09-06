@@ -91,5 +91,5 @@ export default async function handler(
             await database.privilegeRecordModule.create({ date: "20240829", student: person.id, io: true, type: "group", value: group.id, reason: "选择加入组" });
         }
     }
-    API.success(res, "", { message: "Imported successfully" });
+    API.success(res, "Imported successfully");
 }

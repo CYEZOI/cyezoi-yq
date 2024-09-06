@@ -27,9 +27,15 @@ export default function App({ Component, pageProps }: AppProps) {
     typeof localStorage !== undefined &&
       setStudentName(localStorage.getItem("studentName") || "");
     pipeInstance.listen("newAlert", (data: { message: string, variant: string }) => {
-      setAlertList([...alertList, data]);
+      setAlertList((prevAlertList) => {
+        const newAlertList = [...prevAlertList, data];
+        setTimeout(() => {
+          setAlertList((currentAlertList) => currentAlertList.filter(alert => alert !== data));
+        }, 5000);
+        return newAlertList;
+      });
     });
-  });
+  }, []);
 
   return <>
     <Navbar expand="lg" className="bg-body-tertiary mb-3">
@@ -44,6 +50,7 @@ export default function App({ Component, pageProps }: AppProps) {
             <Nav.Link href="/">{t("home")}</Nav.Link>
             <Nav.Link href="/student">{t("student")}</Nav.Link>
             <Nav.Link href="/privilegeRecord">{t("privilegeRecord")}</Nav.Link>
+            <Nav.Link href="/group">{t("group")}</Nav.Link>
             <Nav.Link href="/finance">{t("finance")}</Nav.Link>
             <Nav.Link href="https://langningchen-my.sharepoint.com/:f:/p/langningchen/EmD2DAlbL8hDh8Lw_HIcwZABUBO5L2x3urA03YMPnL5gkQ">{t("resource")}</Nav.Link>
           </Nav>
@@ -64,7 +71,7 @@ export default function App({ Component, pageProps }: AppProps) {
     <Container>
       <Stack gap={3} className="z-1 position-fixed top-0 end-0 mt-3 me-3 opacity-75">
         {alertList.map((alert, index) => {
-          return <Alert variant={alert.variant} onClose={() => {
+          return <Alert key={index} variant={alert.variant} onClose={() => {
             setAlertList(alertList.filter((_, i) => i !== index));
           }} dismissible>{alert.message}</Alert>;
         })}

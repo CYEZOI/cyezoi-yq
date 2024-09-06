@@ -8,6 +8,7 @@ export default async function handler(
   res: NextApiResponse<APIResponse>,
 ) {
   if (req.method == "GET") {
+    i18n.changeLanguage(req.query.lang as string || "en");
     var studentIdList: Array<number> = [];
     if (req.query.studentIdList && typeof req.query.studentIdList == "string") {
       for (const studentId of req.query.studentIdList.split(",")) {
@@ -42,9 +43,9 @@ export default async function handler(
       console.error(error.name + "  " + error.message);
       API.failure(res, i18n.t("databaseError"));
     });
-    API.success(res, "", { student });
+    API.success(res, i18n.t("studentGetSuccess"), { student: student });
   }
   else {
-    API.failure(res, "Invalid method");
+    API.failure(res, i18n.t("invalidMethod"));
   }
 }

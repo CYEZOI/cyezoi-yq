@@ -1,18 +1,12 @@
 export class pipe {
-    private pipes: { [key: string]: Function[] } = {};
+    private pipes: { [key: string]: Function } = {};
 
     public listen(key: string, callback: Function) {
-        if (!this.pipes[key]) {
-            this.pipes[key] = [];
-        }
-        this.pipes[key].push(callback);
+        this.pipes[key] = callback;
     }
 
     public emit(key: string, data: any = null) {
-        const callbacks = this.pipes[key];
-        if (callbacks) {
-            callbacks.forEach(callback => callback(data));
-        }
+        this.pipes[key] && this.pipes[key](data);
     }
 }
 

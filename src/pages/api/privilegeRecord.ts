@@ -8,6 +8,7 @@ export default async function handler(
   res: NextApiResponse<APIResponse>,
 ) {
   if (req.method == "GET") {
+    i18n.changeLanguage(req.query.lang as string || "en");
     var page: number = 1;
     if (req.query.page && typeof req.query.page == "string") {
       const pageNumber = parseInt(req.query.page);
@@ -52,9 +53,9 @@ export default async function handler(
       console.error(error);
       API.failure(res, i18n.t("databaseError"));
     });
-    API.success(res, "", { privilegeRecord, privilegeRecordSize });
+    API.success(res, i18n.t("privilegeRecordGetSuccess"), { privilegeRecord, privilegeRecordSize });
   }
   else {
-    API.failure(res, "Invalid method");
+    API.failure(res, i18n.t("invalidMethod"));
   }
 }

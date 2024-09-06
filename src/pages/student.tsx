@@ -1,22 +1,14 @@
-import React, { useEffect } from "react";
-import Button from "react-bootstrap/Button";
-import Form from "react-bootstrap/Form";
-import InputGroup from "react-bootstrap/InputGroup";
-import * as yup from "yup";
-import { Formik } from "formik";
+import React from "react";
 import i18n from "@/i18n";
 import Head from "next/head";
-import { Badge, Col, Placeholder, Row, Table } from "react-bootstrap";
+import { Badge, Col, Placeholder, Table } from "react-bootstrap";
 import { API } from "@/api";
 import useSWR from "swr";
 
 export default function student() {
   const { t } = i18n;
 
-  const { data: studentData, error: studentError } = useSWR("student", API.Get);
-  if (studentError) {
-    // handle error
-  }
+  const { data: studentData } = useSWR("student", API.SWRGet);
   const studentDataProvider = studentData as {
     student: Array<{
       studentId: number;
@@ -25,13 +17,10 @@ export default function student() {
     }>;
   };
 
-  const { data: groupMemberData, error: groupMemberError } = useSWR(() => {
+  const { data: groupMemberData } = useSWR(() => {
     const student = studentDataProvider.student.map(student => student.studentId).join(",");
     return student ? "groupMember?student=" + student : null;
-  }, API.Get);
-  if (groupMemberError) {
-    // handle error
-  }
+  }, API.SWRGet);
   const groupMemberDataProvider = groupMemberData as {
     student: Array<{
       studentId: number;
@@ -42,13 +31,10 @@ export default function student() {
     }>;
   };
 
-  const { data: groupData, error: groupError } = useSWR(() => {
+  const { data: groupData } = useSWR(() => {
     const group = groupMemberDataProvider ? groupMemberDataProvider.student.map(groupMember => groupMember.group.map(group => group.groupId)).join(",") : null;
     return group ? "group?groupId=" + group : null;
-  }, API.Get);
-  if (groupError) {
-    // handle error
-  }
+  }, API.SWRGet);
   const groupDataProvider = groupData as {
     group: Array<{
       groupId: number;
@@ -56,13 +42,10 @@ export default function student() {
     }>;
   };
 
-  const { data: roleMemberData, error: roleMemberError } = useSWR(() => {
+  const { data: roleMemberData } = useSWR(() => {
     const student = studentDataProvider.student.map(student => student.studentId).join(",");
     return student ? "roleMember?student=" + student : null;
-  }, API.Get);
-  if (roleMemberError) {
-    // handle error
-  }
+  }, API.SWRGet);
   const roleMemberDataProvider = roleMemberData as {
     student: Array<{
       studentId: number;
@@ -70,13 +53,10 @@ export default function student() {
     }>;
   };
 
-  const { data: roleData, error: roleError } = useSWR(() => {
+  const { data: roleData } = useSWR(() => {
     const role = roleMemberDataProvider ? roleMemberDataProvider.student.map(roleMember => roleMember.role).join(",") : null;
     return role ? "role?roleId=" + role : null;
-  }, API.Get);
-  if (roleError) {
-    // handle error
-  }
+  }, API.SWRGet);
   const roleDataProvider = roleData as {
     role: Array<{
       roleId: number;

@@ -8,6 +8,7 @@ export default async function handler(
   res: NextApiResponse<APIResponse>,
 ) {
   if (req.method == "GET") {
+    i18n.changeLanguage(req.query.lang as string || "en");
     var groupIdList: Array<number> = [];
     if (req.query.groupId && typeof req.query.groupId == "string") {
       for (const groupId of req.query.groupId.split(",")) {
@@ -40,8 +41,8 @@ export default async function handler(
       console.error(error.name + "  " + error.message);
       API.failure(res, i18n.t("databaseError"));
     });
-    API.success(res, "", { group: groupData });
+    API.success(res, i18n.t("groupGetSuccess"), { group: groupData });
   } else {
-    API.failure(res, "Invalid method");
+    API.failure(res, i18n.t("invalidMethod"));
   }
 }

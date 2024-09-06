@@ -8,6 +8,7 @@ export default async function handler(
   res: NextApiResponse<APIResponse>,
 ) {
   if (req.method == "GET") {
+    i18n.changeLanguage(req.query.lang as string || "en");
     var roleIdList: Array<number> = [];
     if (req.query.roleId && typeof req.query.roleId == "string") {
       for (const roleId of req.query.roleId.split(",")) {
@@ -40,8 +41,8 @@ export default async function handler(
       console.error(error.name + "  " + error.message);
       API.failure(res, i18n.t("databaseError"));
     });
-    API.success(res, "", { role: roleData });
+    API.success(res, i18n.t("roleGetSuccess"), { role: roleData });
   } else {
-    API.failure(res, "Invalid method");
+    API.failure(res, i18n.t("invalidMethod"));
   }
 }

@@ -1,18 +1,112 @@
-import React from "react";
+import React, { useEffect } from "react";
 import i18n from "@/i18n";
 import Head from "next/head";
+import useSWR from "swr";
+import { API } from "@/api";
+import { Button } from "react-bootstrap";
 
 export default function group() {
   const { t } = i18n;
 
+  const [groupId, setGroupId] = React.useState<number | null>(null);
+  useEffect(() => {
+    const tempGroupId: string | null = new URLSearchParams(window.location.search).get("groupId");
+    if (tempGroupId != null)
+      setGroupId(parseInt(tempGroupId));
+    else
+      setGroupId(null);
+  }, []);
+
+  const { data: groupData } = useSWR((groupId ? "group?groupIdList=" + groupId : "group"), API.SWRGet);
+  const groupDataProvider = groupData as {
+    group: Array<{
+      groupId: number;
+      groupName: string;
+    }>;
+  };
+
+  const { data: groupMemberData } = useSWR(() => {
+    if (groupId == null) return null;
+    return "groupMember?groupIdList=" + groupId;
+  }, API.SWRGet);
+  const groupMemberDataProvider = groupMemberData as {
+    student: Array<{
+      studentId: number;
+      group: Array<{
+        groupId: number;
+        leader: boolean;
+      }>;
+    }>;
+  };
+
+  const { data: studentData } = useSWR(() => {
+    if (groupId == null) return null;
+    return "student?studentIdList=" + groupMemberDataProvider.student.map(groupMember => groupMember.studentId).join(",");
+  }, API.SWRGet);
+  const studentDataProvider = studentData as {
+    student: Array<{
+      studentId: number;
+      studentName: string;
+    }>;
+  };
+
+  if (groupId == null) {
+    return (
+      <>
+        <Head>
+          <title>{t("group") + " - " + t("brand")}</title>
+        </Head>
+        <div>
+          <h3>{t("group")}</h3>
+          <table className="table table-bordered">
+            <thead>
+              <tr>
+                <th>{t("groupId")}</th>
+                <th>{t("groupName")}</th>
+                <th>{t("action")}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {groupDataProvider ? groupDataProvider.group.map(group => (
+                <tr key={group.groupId}>
+                  <td>{group.groupId}</td>
+                  <td>{group.groupName}</td>
+                  <td>
+                    <Button variant="outline-primary" onClick={() => setGroupId(group.groupId)} size="sm">{t("enter")}</Button>
+                  </td>
+                </tr>
+              )) : null}
+            </tbody>
+          </table>
+        </div>
+      </>
+    );
+  }
   return (
     <>
       <Head>
         <title>{t("group") + " - " + t("brand")}</title>
       </Head>
-      <div>
-        <h3>{t("group")}</h3>
-      </div>
+      <h3>
+        {groupDataProvider ? groupDataProvider.group[0].groupName : null}
+        <Button onClick={() => setGroupId(null)} className="ms-2" size="sm">{t("back")}</Button>
+      </h3>
+      <table className="table table-bordered">
+        <thead>
+          <tr>
+            <th>{t("id")}</th>
+            <th>{t("studentName")}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {groupMemberDataProvider ? groupMemberDataProvider.student.map(groupMember => (
+            <tr key={groupMember.studentId} className={groupMember.group[0].leader ? "table-primary" : ""}>
+              <td>{groupMember.studentId}</td>
+              <td>{studentDataProvider ? studentDataProvider.student.find(student => student.studentId == groupMember.studentId)?.studentName : null}</td>
+            </tr>
+          )) : null}
+        </tbody>
+      </table>
     </>
   );
 }

@@ -8,8 +8,9 @@ export default async function handler(
   res: NextApiResponse<APIResponse>,
 ) {
   if (req.method == "GET") {
+    i18n.changeLanguage(req.query.lang as string || "en");
     await financeModule.findAll().then((records) => {
-      API.success(res, "", { records: records });
+      API.success(res, i18n.t("financeGetSuccess"), { records: records });
     }).catch((error: Error) => {
       console.error(error);
       API.failure(res, i18n.t("databaseError"));
@@ -17,24 +18,26 @@ export default async function handler(
   }
   else if (req.method == "POST") {
     const request: APIRequest = req.body;
+    i18n.changeLanguage(request.lang || "en");
     await financeModule.create({
       money: request.params.money,
       detail: request.params.detail,
     }).then(() => {
-      API.success(res);
+      API.success(res, i18n.t("financeCreateSuccess"));
     }).catch((error: Error) => {
       console.error(error);
       API.failure(res, i18n.t("databaseError"));
     });
   }
   else if (req.method == "DELETE") {
-    const request: URLSearchParams = new URLSearchParams(new URL(req.url!, "http://localhost").search);
+    i18n.changeLanguage(req.query.lang as string || "en");
+    const request: any = req.query;
     await financeModule.destroy({
       where: {
         financeId: request.get("financeId"),
       },
     }).then(() => {
-      API.success(res);
+      API.success(res, i18n.t("financeDeleteSuccess"));
     }).catch((error: Error) => {
       console.error(error);
       API.failure(res, i18n.t("databaseError"));
@@ -42,6 +45,7 @@ export default async function handler(
   }
   else if (req.method == "PUT") {
     const request: APIRequest = req.body;
+    i18n.changeLanguage(request.lang || "en");
     await financeModule.update({
       money: request.params.money,
       detail: request.params.detail,
@@ -50,13 +54,13 @@ export default async function handler(
         financeId: request.params.financeId,
       },
     }).then(() => {
-      API.success(res);
+      API.success(res), i18n.t("financeUpdateSuccess");
     }).catch((error: Error) => {
       console.error(error);
       API.failure(res, i18n.t("databaseError"));
     });
   }
   else {
-    API.failure(res, "Invalid method");
+    API.failure(res, i18n.t("invalidMethod"));
   }
 }
