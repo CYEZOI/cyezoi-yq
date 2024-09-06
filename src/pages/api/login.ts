@@ -26,6 +26,10 @@ export default async function handler(
             if (user) {
                 userId = user.getDataValue("userId");
             }
+            else {
+                API.failure(res, i18n.t("userNotFound"));
+                return;
+            }
         }).catch((error: Error) => {
             console.error(error);
             API.failure(res, i18n.t("databaseError"));

@@ -6,11 +6,13 @@ import { Translate } from "react-bootstrap-icons";
 import i18n from "@/i18n";
 import "bootstrap/dist/css/bootstrap.css";
 import { useEffect, useState } from "react";
-import { Container } from "react-bootstrap";
+import { Alert, Container, Stack } from "react-bootstrap";
+import { pipeInstance } from "@/pipe";
 
 export default function App({ Component, pageProps }: AppProps) {
   const [language, setLanguage] = useState("en");
   const [studentName, setStudentName] = useState("");
+  const [alertList, setAlertList] = useState<{ message: string, variant: string }[]>([]);
   i18n.changeLanguage(language);
   const { t } = i18n;
   const handleLanguage = (language: string) => {
@@ -21,10 +23,12 @@ export default function App({ Component, pageProps }: AppProps) {
 
   useEffect(() => {
     typeof document !== undefined &&
-      // import("react-bootstrap/dist/react-bootstrap");
       handleLanguage(localStorage.getItem("language") || "en");
     typeof localStorage !== undefined &&
       setStudentName(localStorage.getItem("studentName") || "");
+    pipeInstance.listen("newAlert", (data: { message: string, variant: string }) => {
+      setAlertList([...alertList, data]);
+    });
   });
 
   return <>
@@ -58,6 +62,13 @@ export default function App({ Component, pageProps }: AppProps) {
       </Container>
     </Navbar >
     <Container>
+      <Stack gap={3} className="z-1 position-fixed top-0 end-0 mt-3 me-3 opacity-75">
+        {alertList.map((alert, index) => {
+          return <Alert variant={alert.variant} onClose={() => {
+            setAlertList(alertList.filter((_, i) => i !== index));
+          }} dismissible>{alert.message}</Alert>;
+        })}
+      </Stack>
       <Component {...pageProps} classList="mt-2" />
       <div className="mt-3">
         <center>{t("footer")}</center>

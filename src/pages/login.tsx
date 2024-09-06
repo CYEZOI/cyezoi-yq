@@ -4,6 +4,7 @@ import { Formik } from "formik";
 import * as yup from "yup";
 import { API } from "@/api";
 import { Button, FloatingLabel, Form } from "react-bootstrap";
+import { pipeInstance } from "@/pipe";
 
 export default function login2() {
     const { t } = t18n;
@@ -25,12 +26,12 @@ export default function login2() {
                         API.Get("user", { userIdList: userId }).then((response: any) => {
                             const studentId = response.user[0].studentId;
                             API.Get("student", { studentIdList: studentId }).then((response: any) => {
+                                if (response.student.length === 0) {
+                                    pipeInstance.emit("newAlert", { message: t("studentNotFound"), variant: "danger" }); // TO-DO
+                                }
                                 const studentName = response.student[0].studentName;
                                 localStorage.setItem("studentName", studentName);
                                 location.href = "/";
-                            }).catch((error: Error) => {
-                                console.error(error.name + "  " + error.message);
-                                alert(t("error") + "  " + t("errorDescription"));
                             });
                         });
                     });
