@@ -2,6 +2,7 @@ import { API, APIResponse } from "@/api";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { userModule } from "@/database";
 import i18n from "@/i18n";
+import { token } from "@/token";
 
 export default async function handler(
   req: NextApiRequest,
@@ -9,6 +10,11 @@ export default async function handler(
 ) {
   if (req.method == "GET") {
     i18n.changeLanguage(req.query.lang as string || "en");
+    if (await token.checkToken(req.query.token as string) == null) {
+      API.failure(res, i18n.t("unauthorized"));
+      return;
+    }
+
     var userIdList: Array<number> = [];
     if (req.query.userIdList && typeof req.query.userIdList == "string") {
       for (const userId of req.query.userIdList.split(",")) {

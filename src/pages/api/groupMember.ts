@@ -2,6 +2,7 @@ import { API, APIRequest, APIResponse } from "@/api";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { groupMemberModule } from "@/database";
 import i18n from "@/i18n";
+import { token } from "@/token";
 
 export default async function handler(
   req: NextApiRequest,
@@ -9,6 +10,11 @@ export default async function handler(
 ) {
   if (req.method == "GET") {
     i18n.changeLanguage(req.query.lang as string || "en");
+    if (await token.checkToken(req.query.token as string) == null) {
+      API.failure(res, i18n.t("unauthorized"));
+      return;
+    }
+
     var studentIdList: Array<number> = [];
     var groupIdList: Array<number> = [];
     if (req.query.studentIdList && typeof req.query.studentIdList == "string") {
@@ -62,6 +68,11 @@ export default async function handler(
   else if (req.method == "POST") {
     const request: APIRequest = req.body;
     i18n.changeLanguage(request.lang || "en");
+    if (await token.checkToken(req.query.token as string) == null) {
+      API.failure(res, i18n.t("unauthorized"));
+      return;
+    }
+
     const student = request.params.student;
     const group = request.params.group;
     const leader = request.params.leader;

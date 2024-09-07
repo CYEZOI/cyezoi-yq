@@ -63,7 +63,7 @@ export default function privilegeRecord() {
     </Head>
     <div>
       <h3>{t("privilegeRecord")}</h3>
-      <Pagination>
+      <Pagination className="justify-content-center">
         <Pagination.First onClick={() => setPage(1)} />
         <Pagination.Prev onClick={() => setPage(page - 1)} disabled={page == 1} />
         <Pagination.Item>{page}</Pagination.Item>

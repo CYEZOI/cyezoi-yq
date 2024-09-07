@@ -7,6 +7,7 @@ export type APIData = {
 export type APIRequest = {
     params: any;
     lang: string;
+    token: string;
 };
 export type APIResponse = {
     success: boolean;
@@ -23,6 +24,7 @@ export class API {
     private static async request_url(method: string, url: string, data: Record<string, string>, callbacks: APICallbacks): Promise<void> {
         const dataParams: URLSearchParams = new URLSearchParams(data);
         dataParams.append("lang", localStorage.getItem("language") || "en");
+        dataParams.append("token", localStorage.getItem("token") || "");
         url += (url.includes("?") ? "&" : "?") + dataParams.toString();
         return fetch("/api/" + url, {
             method,
@@ -51,6 +53,7 @@ export class API {
         const request: APIRequest = {
             params: data.params || {},
             lang: localStorage.getItem("language") || "en",
+            token: localStorage.getItem("token") || "",
         };
         fetch("/api/" + url, {
             method,

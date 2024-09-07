@@ -75,6 +75,8 @@ const resources = {
       "action": "Action",
       "enter": "Enter",
       "back": "Back",
+      "feedback": "Feedback",
+      "unauthorized": "Unauthorized",
     },
   },
   zh: {
@@ -150,6 +152,8 @@ const resources = {
       "action": "操作",
       "enter": "查看",
       "back": "返回",
+      "feedback": "反馈",
+      "unauthorized": "未授权",
     },
   },
 };

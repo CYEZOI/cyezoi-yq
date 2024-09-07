@@ -1,6 +1,6 @@
 import { API, APIResponse } from "@/api";
 import type { NextApiRequest, NextApiResponse } from "next";
-import { userModule } from "@/database";
+import { tokenModule, userModule } from "@/database";
 import i18n from "@/i18n";
 
 export default async function handler(
@@ -9,6 +9,7 @@ export default async function handler(
 ) {
   if (req.method == "GET") {
     i18n.changeLanguage(req.query.lang as string || "en");
+
     var username: string = "";
     var password: string = "";
     if (req.query.username && typeof req.query.username == "string") {
@@ -35,7 +36,18 @@ export default async function handler(
       console.error(error);
       API.failure(res, i18n.t("databaseError"));
     });
-    API.success(res, i18n.t("loginSuccess"), { userId });
+    var token: string = "";
+    for (let i = 0; i < 64; i++) {
+      token += String.fromCharCode(Math.floor(Math.random() * 26) + 97);
+    }
+    await tokenModule.create({
+      userId,
+      token,
+    }).catch((error: Error) => {
+      console.error(error);
+      API.failure(res, i18n.t("databaseError"));
+    });
+    API.success(res, i18n.t("loginSuccess"), { userId, token });
   }
   else {
     API.failure(res, i18n.t("invalidMethod"));

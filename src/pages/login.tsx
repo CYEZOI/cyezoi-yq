@@ -6,7 +6,7 @@ import { API } from "@/api";
 import { Button, FloatingLabel, Form } from "react-bootstrap";
 import { pipeInstance } from "@/pipe";
 
-export default function login2() {
+export default function login() {
   const { t } = t18n;
   return (
     <>
@@ -24,14 +24,15 @@ export default function login2() {
           API.Get("login", values, {
             success: (response: any) => {
               const userId = response.userId;
+              const token = response.token;
+              localStorage.setItem("userId", userId);
+              localStorage.setItem("token", token);
               API.Get("user", { userIdList: userId }, {
                 success: (response: any) => {
                   const studentId = response.user[0].studentId;
+                  localStorage.setItem("studentId", studentId);
                   API.Get("student", { studentIdList: studentId }, {
                     success: (response: any) => {
-                      if (response.student.length === 0) {
-                        pipeInstance.emit("newAlert", { message: t("studentNotFound"), variant: "danger" });
-                      }
                       const studentName = response.student[0].studentName;
                       localStorage.setItem("studentName", studentName);
                       location.href = "/";

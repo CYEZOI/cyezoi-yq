@@ -22,10 +22,8 @@ export default function App({ Component, pageProps }: AppProps) {
   }
 
   useEffect(() => {
-    typeof document !== undefined &&
-      handleLanguage(localStorage.getItem("language") || "en");
-    typeof localStorage !== undefined &&
-      setStudentName(localStorage.getItem("studentName") || "");
+    typeof document !== undefined && handleLanguage(localStorage.getItem("language") || "en");
+    typeof localStorage !== undefined && setStudentName(localStorage.getItem("studentName") || "");
     pipeInstance.listen("newAlert", (data: { message: string, variant: string }) => {
       setAlertList((prevAlertList) => {
         const newAlertList = [...prevAlertList, data];
@@ -52,7 +50,7 @@ export default function App({ Component, pageProps }: AppProps) {
             <Nav.Link href="/privilegeRecord">{t("privilegeRecord")}</Nav.Link>
             <Nav.Link href="/group">{t("group")}</Nav.Link>
             <Nav.Link href="/finance">{t("finance")}</Nav.Link>
-            <Nav.Link href="https://langningchen-my.sharepoint.com/:f:/p/langningchen/EmD2DAlbL8hDh8Lw_HIcwZABUBO5L2x3urA03YMPnL5gkQ">{t("resource")}</Nav.Link>
+            <Nav.Link href="https://langningchen.sharepoint.com/:f:/g/ErK-j2zEQDRMjhUFSqFC2aIBQaNc5j6OprIRQsgwdmirDw?e=KRm4fx">{t("resource")}</Nav.Link>
           </Nav>
           <NavDropdown title={<span><Translate className="me-2" />{t("language")}</span>} className="me-4">
             <NavDropdown.Item onClick={() => { handleLanguage("en"); }}>English</NavDropdown.Item>
@@ -62,7 +60,12 @@ export default function App({ Component, pageProps }: AppProps) {
             studentName == "" ?
               <Nav.Link href="/login">{t("login")}</Nav.Link> :
               <NavDropdown title={studentName}>
-                <NavDropdown.Item onClick={() => { localStorage.removeItem("studentName"); setStudentName(""); }}>{t("logout")}</NavDropdown.Item>
+                <NavDropdown.Item onClick={() => {
+                  localStorage.removeItem("userId");
+                  localStorage.removeItem("token");
+                  localStorage.removeItem("studentId");
+                  localStorage.removeItem("studentName"); setStudentName("");
+                }}>{t("logout")}</NavDropdown.Item>
               </NavDropdown>
           }
         </Navbar.Collapse>

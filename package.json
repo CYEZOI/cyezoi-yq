@@ -18,6 +18,7 @@
     "react-bootstrap-icons": "^1.11.4",
     "react-dom": "^18",
     "react-i18next": "^15.0.1",
+    "recharts": "^2.12.7",
     "sequelize": "^6.37.3",
     "sqlite3": "^5.1.7",
     "swr": "^2.2.5",

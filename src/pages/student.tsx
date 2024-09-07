@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import i18n from "@/i18n";
 import Head from "next/head";
 import { Badge, Col, Placeholder, Table } from "react-bootstrap";
@@ -7,6 +7,11 @@ import useSWR from "swr";
 
 export default function student() {
   const { t } = i18n;
+
+  const [studentName, setStudentName] = useState<string | null>(null);
+  useEffect(() => {
+    typeof localStorage !== "undefined" && setStudentName(localStorage.getItem("studentName"));
+  });
 
   const { data: studentData } = useSWR("student", API.SWRGet);
   const studentDataProvider = studentData as {
@@ -74,36 +79,32 @@ export default function student() {
         <thead>
           <tr>
             <th className="col-2">{t("studentNumber")}</th>
-            <th className="col-2">{t("studentName")}</th>
+            <th className="col-8">{t("studentName")}</th>
             <th className="col-2">{t("gender")}</th>
-            <th className="col-3">{t("group")}</th>
-            <th className="col-3">{t("role")}</th>
           </tr>
         </thead>
         <tbody>
           {studentDataProvider && studentDataProvider.student.map((student: any) => (
-            <tr key={student["studentId"]}>
+            <tr key={student["studentId"]} className={studentName == student["studentName"] ? "table-primary" : ""}>
               <td>{student["studentId"]}</td>
-              <td>{student["studentName"]}</td>
-              <td>{student["gender"] ? t("male") : t("female")}</td>
               <td>
+                {student["studentName"]}
                 {groupMemberDataProvider ? groupMemberDataProvider.student.filter(groupMember => groupMember.studentId == student["studentId"]).map(groupMember => (
                   groupMember.group.map(group => (
-                    <Badge key={group.groupId} bg={group.leader ? "primary" : "secondary"}>
+                    <Badge className="ms-2" key={group.groupId} bg={group.leader ? "primary" : "secondary"} role="button" onClick={() => { window.location.href = "/group?groupId=" + group.groupId; }}>
                       {groupDataProvider ? groupDataProvider.group.filter(groupData => groupData.groupId == group.groupId).map(groupData => groupData.groupName) : t("group") + " " + group.groupId}
                     </Badge>
                   ))
-                )) : <Placeholder animation="wave"><Placeholder as={Col} xs={12} /></Placeholder>}
-              </td>
-              <td>
+                )) : <Placeholder animation="wave"><Placeholder as={Col} xs={3} /></Placeholder>}
                 {roleMemberDataProvider ? roleMemberDataProvider.student.filter(roleMember => roleMember.studentId == student["studentId"]).map(roleMember => (
                   roleMember.role.map(role => (
-                    <Badge key={role} bg="primary">
+                    <Badge className="ms-2" key={role} bg="primary">
                       {roleDataProvider ? roleDataProvider.role.filter(roleData => roleData.roleId == role).map(roleData => roleData.roleName) : t("role") + " " + role}
                     </Badge>
                   ))
-                )) : <Placeholder animation="wave"><Placeholder as={Col} xs={12} /></Placeholder>}
+                )) : <Placeholder animation="wave"><Placeholder as={Col} xs={3} /></Placeholder>}
               </td>
+              <td>{student["gender"] ? t("male") : t("female")}</td>
             </tr>
           ))}
         </tbody>

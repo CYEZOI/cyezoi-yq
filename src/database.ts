@@ -156,4 +156,18 @@ export const userModule = sequelize.define(
     },
 );
 
+export const tokenModule = sequelize.define(
+    "token",
+    {
+        token: {
+            type: DataTypes.STRING,
+            primaryKey: true,
+        },
+        userId: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+        },
+    },
+);
+
 sequelize.sync();

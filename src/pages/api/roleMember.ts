@@ -2,6 +2,7 @@ import { API, APIRequest, APIResponse } from "@/api";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { roleMemberModule } from "@/database";
 import i18n from "@/i18n";
+import { token } from "@/token";
 
 export default async function handler(
   req: NextApiRequest,
@@ -9,6 +10,11 @@ export default async function handler(
 ) {
   if (req.method == "GET") {
     i18n.changeLanguage(req.query.lang as string || "en");
+    if (await token.checkToken(req.query.token as string) == null) {
+      API.failure(res, i18n.t("unauthorized"));
+      return;
+    }
+
     var studentIdList: Array<number> = [];
     if (req.query.studentIdList && typeof req.query.studentIdList == "string") {
       for (const studentId of req.query.studentIdList.split(",")) {
@@ -46,6 +52,11 @@ export default async function handler(
   else if (req.method == "POST") {
     const request: APIRequest = req.body;
     i18n.changeLanguage(request.lang || "en");
+    if (await token.checkToken(req.query.token as string) == null) {
+      API.failure(res, i18n.t("unauthorized"));
+      return;
+    }
+
     const student = request.params.student;
     const role = request.params.role;
     const leader = request.params.leader;
@@ -66,6 +77,11 @@ export default async function handler(
   }
   else if (req.method == "DELETE") {
     i18n.changeLanguage(req.query.lang as string || "en");
+    if (await token.checkToken(req.query.token as string) == null) {
+      API.failure(res, i18n.t("unauthorized"));
+      return;
+    }
+
     const student = req.body.params.student;
     const role = req.body.params.role;
     if (typeof student != "number" || typeof role != "number") {

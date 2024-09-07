@@ -9,11 +9,29 @@ import Head from "next/head";
 import { Col, Row, Table } from "react-bootstrap";
 import { API } from "@/api";
 import useSWR from "swr";
+import { Bar, CartesianGrid, Line, BarChart, Tooltip, XAxis, YAxis, ResponsiveContainer } from "recharts";
 
 export default function finance() {
   const { t } = i18n;
-  const { data, mutate } = useSWR("finance", API.SWRGet);
-  const dataProvider = data as { records: any[] };
+  const { data: financeData, mutate } = useSWR("finance", API.SWRGet);
+  const financeDataProvider = financeData as {
+    records: {
+      financeId: number,
+      money: number,
+      detail: string,
+      createdAt: string,
+    }[]
+  }
+
+  const { data: financeStaticsData } = useSWR("financeStatics", API.SWRGet);
+  const financeStaticsDataProvider = financeStaticsData as {
+    records: {
+      month: string,
+      income: number,
+      outcome: number,
+      balance: number,
+    }[]
+  }
 
   return (
     <>
@@ -55,6 +73,17 @@ export default function finance() {
           </Form>;
         }}
       </Formik>
+      <ResponsiveContainer width="100%" height={300}>
+        <BarChart width={600} height={300} data={financeStaticsDataProvider && financeStaticsDataProvider.records} >
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="month" />
+          <YAxis />
+          <Tooltip />
+          <Bar dataKey="income" fill="#8884d8" />
+          <Bar dataKey="outcome" fill="#82ca9d" />
+          <Line type="monotone" dataKey="balance" stroke="#ff7300" />
+        </BarChart>
+      </ResponsiveContainer>
       <Table>
         <thead>
           <tr>
@@ -66,7 +95,7 @@ export default function finance() {
           </tr>
         </thead>
         <tbody>
-          {data && dataProvider.records.map((record: any) => (
+          {financeDataProvider && financeDataProvider.records.map((record: any) => (
             <tr key={record["financeId"]}>
               <td>{record["financeId"]}</td>
               <td>{new Date(record["createdAt"]).toLocaleString()}</td>
