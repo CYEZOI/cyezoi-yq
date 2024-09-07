@@ -13,6 +13,10 @@ export const financeModule = sequelize.define(
             primaryKey: true,
             autoIncrement: true,
         },
+        date: {
+            type: DataTypes.DATEONLY,
+            allowNull: false,
+        },
         money: {
             type: DataTypes.INTEGER,
             allowNull: false,
@@ -107,7 +111,7 @@ export const privilegeRecordModule = sequelize.define(
             autoIncrement: true,
         },
         date: {
-            type: DataTypes.STRING,
+            type: DataTypes.DATEONLY,
             allowNull: false,
         },
         student: {
@@ -153,6 +157,15 @@ export const userModule = sequelize.define(
             type: DataTypes.INTEGER,
             allowNull: true,
         },
+        permission: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            defaultValue: 0,
+        },
+        lastOnline: {
+            type: DataTypes.DATE,
+            allowNull: true,
+        },
     },
 );
 
@@ -169,5 +182,3 @@ export const tokenModule = sequelize.define(
         },
     },
 );
-
-sequelize.sync();

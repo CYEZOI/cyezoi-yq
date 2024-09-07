@@ -71,7 +71,7 @@ export default function privilegeRecord() {
         <Pagination.Last onClick={() => setPage(Math.ceil(privilegeRecordDataProvider.privilegeRecordSize / 10))} />
       </Pagination>
       {privilegeRecordDataProvider && privilegeRecordDataProvider.privilegeRecord.map((record: any) => (
-        <Card key={record.id} className="mb-2">
+        <Card key={record.id} className="mb-2" border={record.io ? "info" : "secondary"}>
           <Card.Body>
             <Card.Title>{studentDataProvider ? studentDataProvider.student.find(student => student.studentId == record.student)?.studentName : t("student") + record.student}</Card.Title>
             <Card.Subtitle className="mb-2 text-muted">{record.date}</Card.Subtitle>

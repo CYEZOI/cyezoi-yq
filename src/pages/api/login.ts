@@ -2,6 +2,7 @@ import { API, APIResponse } from "@/api";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { tokenModule, userModule } from "@/database";
 import i18n from "@/i18n";
+import { permission } from "@/permission";
 
 export default async function handler(
   req: NextApiRequest,
@@ -25,12 +26,16 @@ export default async function handler(
         password,
       },
     }).then(user => {
-      if (user) {
-        userId = user.getDataValue("userId");
-      }
-      else {
+      if (!user) {
         API.failure(res, i18n.t("userNotFound"));
         return;
+      }
+      else if (new permission(user.getDataValue("permission")).checkPermission(permission.PERMISSION_LOGIN)) {
+        API.failure(res, i18n.t("permissionDenied"));
+        return;
+      }
+      else {
+        userId = user.getDataValue("userId");
       }
     }).catch((error: Error) => {
       console.error(error);

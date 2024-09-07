@@ -2,19 +2,26 @@ import type { AppProps } from "next/app";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import NavDropdown from "react-bootstrap/NavDropdown";
-import { Translate } from "react-bootstrap-icons";
+import { Book, BoxArrowRight, BoxArrowUpRight, CashCoin, HouseDoor, Moon, People, Person, PersonBadge, Sun, Toggles, Translate } from "react-bootstrap-icons";
 import i18n from "@/i18n";
 import "bootstrap/dist/css/bootstrap.css";
 import { useEffect, useState } from "react";
 import { Alert, Container, Stack } from "react-bootstrap";
 import { pipeInstance } from "@/pipe";
+import Link from "next/link";
 
 export default function App({ Component, pageProps }: AppProps) {
   const [language, setLanguage] = useState("en");
   const [studentName, setStudentName] = useState("");
   const [alertList, setAlertList] = useState<{ message: string, variant: string }[]>([]);
+  const [mode, setMode] = useState("light");
   i18n.changeLanguage(language);
   const { t } = i18n;
+  const handleMode = (mode: string) => {
+    localStorage.setItem("mode", mode);
+    document.body.setAttribute("data-bs-theme", mode);
+    setMode(mode);
+  }
   const handleLanguage = (language: string) => {
     localStorage.setItem("language", language);
     i18n.changeLanguage(language);
@@ -22,11 +29,12 @@ export default function App({ Component, pageProps }: AppProps) {
   }
 
   useEffect(() => {
+    typeof localStorage !== undefined && handleMode(localStorage.getItem("mode") || "light");
     typeof document !== undefined && handleLanguage(localStorage.getItem("language") || "en");
     typeof localStorage !== undefined && setStudentName(localStorage.getItem("studentName") || "");
     pipeInstance.listen("newAlert", (data: { message: string, variant: string }) => {
       setAlertList((prevAlertList) => {
-        const newAlertList = [...prevAlertList, data];
+        const newAlertList = [...prevAlertList.filter(alert => alert.message !== data.message), data];
         setTimeout(() => {
           setAlertList((currentAlertList) => currentAlertList.filter(alert => alert !== data));
         }, 5000);
@@ -45,14 +53,19 @@ export default function App({ Component, pageProps }: AppProps) {
         <Navbar.Toggle />
         <Navbar.Collapse>
           <Nav className="me-auto">
-            <Nav.Link href="/">{t("home")}</Nav.Link>
-            <Nav.Link href="/student">{t("student")}</Nav.Link>
-            <Nav.Link href="/privilegeRecord">{t("privilegeRecord")}</Nav.Link>
-            <Nav.Link href="/group">{t("group")}</Nav.Link>
-            <Nav.Link href="/finance">{t("finance")}</Nav.Link>
-            <Nav.Link href="https://langningchen.sharepoint.com/:f:/g/ErK-j2zEQDRMjhUFSqFC2aIBQaNc5j6OprIRQsgwdmirDw?e=KRm4fx">{t("resource")}</Nav.Link>
+            <Nav.Link href="/"><HouseDoor className="me-1" />{t("home")}</Nav.Link>
+            <Nav.Link href="/student"><Person className="me-1" />{t("student")}</Nav.Link>
+            <Nav.Link href="/privilegeRecord"><Book className="me-1" />{t("privilegeRecord")}</Nav.Link>
+            <Nav.Link href="/group"><People className="me-1" />{t("group")}</Nav.Link>
+            <Nav.Link href="/finance"><CashCoin className="me-1" />{t("finance")}</Nav.Link>
+            <Nav.Link href="/user"><PersonBadge className="me-1" />{t("user")}</Nav.Link>
+            <Nav.Link href="https://langningchen.sharepoint.com/:f:/g/ErK-j2zEQDRMjhUFSqFC2aIBQaNc5j6OprIRQsgwdmirDw?e=KRm4fx" target="_blank"><BoxArrowUpRight className="me-1" />{t("resource")}</Nav.Link>
           </Nav>
-          <NavDropdown title={<span><Translate className="me-2" />{t("language")}</span>} className="me-4">
+          <NavDropdown title={<span><Toggles className="me-1" />{t("mode")}</span>} className="me-4">
+            <NavDropdown.Item onClick={() => { handleMode("light"); }}><Sun className="me-1" />{t("light")}</NavDropdown.Item>
+            <NavDropdown.Item onClick={() => { handleMode("dark"); }}><Moon className="me-1" />{t("dark")}</NavDropdown.Item>
+          </NavDropdown>
+          <NavDropdown title={<span><Translate className="me-1" />{t("language")}</span>} className="me-4">
             <NavDropdown.Item onClick={() => { handleLanguage("en"); }}>English</NavDropdown.Item>
             <NavDropdown.Item onClick={() => { handleLanguage("zh"); }}>中文</NavDropdown.Item>
           </NavDropdown>
@@ -65,7 +78,7 @@ export default function App({ Component, pageProps }: AppProps) {
                   localStorage.removeItem("token");
                   localStorage.removeItem("studentId");
                   localStorage.removeItem("studentName"); setStudentName("");
-                }}>{t("logout")}</NavDropdown.Item>
+                }}><BoxArrowRight className="me-1" />{t("logout")}</NavDropdown.Item>
               </NavDropdown>
           }
         </Navbar.Collapse>
@@ -80,8 +93,11 @@ export default function App({ Component, pageProps }: AppProps) {
         })}
       </Stack>
       <Component {...pageProps} classList="mt-2" />
-      <div className="mt-3">
-        <center>{t("footer")}</center>
+      <div className="mt-5">
+        <center>
+          {t("footer")}
+          <Link href="https://github.com/CYEZOI/cyezoi-yq" target="_blank">GitHub</Link>
+        </center>
       </div>
     </Container>
   </>;

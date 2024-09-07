@@ -1,4 +1,4 @@
-import { tokenModule } from "./database";
+import { tokenModule, userModule } from "./database";
 
 export class token {
     public static async checkToken(token: string): Promise<number | null> {
@@ -6,8 +6,19 @@ export class token {
             where: {
                 token: token,
             },
-        }).then(record => {
-            return record ? record.getDataValue("userId") : null;
+        }).then(async (record) => {
+            if (!record) {
+                return null;
+            }
+            const userId = record.getDataValue("userId");
+            await userModule.update({
+                lastOnline: new Date(),
+            }, {
+                where: {
+                    userId,
+                },
+            });
+            return userId;
         }).catch(() => {
             return null;
         });

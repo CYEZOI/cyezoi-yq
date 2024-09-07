@@ -4,6 +4,7 @@ import Head from "next/head";
 import { Badge, Col, Placeholder, Table } from "react-bootstrap";
 import { API } from "@/api";
 import useSWR from "swr";
+import { GenderFemale, GenderMale } from "react-bootstrap-icons";
 
 export default function student() {
   const { t } = i18n;
@@ -78,7 +79,7 @@ export default function student() {
       <Table>
         <thead>
           <tr>
-            <th className="col-2">{t("studentNumber")}</th>
+            <th className="col-2">{t("studentId")}</th>
             <th className="col-8">{t("studentName")}</th>
             <th className="col-2">{t("gender")}</th>
           </tr>
@@ -95,16 +96,16 @@ export default function student() {
                       {groupDataProvider ? groupDataProvider.group.filter(groupData => groupData.groupId == group.groupId).map(groupData => groupData.groupName) : t("group") + " " + group.groupId}
                     </Badge>
                   ))
-                )) : <Placeholder animation="wave"><Placeholder as={Col} xs={3} /></Placeholder>}
+                )) : <Placeholder className="ms-2" animation="wave"><Placeholder as={Col} xs={3} /></Placeholder>}
                 {roleMemberDataProvider ? roleMemberDataProvider.student.filter(roleMember => roleMember.studentId == student["studentId"]).map(roleMember => (
                   roleMember.role.map(role => (
                     <Badge className="ms-2" key={role} bg="primary">
                       {roleDataProvider ? roleDataProvider.role.filter(roleData => roleData.roleId == role).map(roleData => roleData.roleName) : t("role") + " " + role}
                     </Badge>
                   ))
-                )) : <Placeholder animation="wave"><Placeholder as={Col} xs={3} /></Placeholder>}
+                )) : <Placeholder className="ms-2" animation="wave"><Placeholder as={Col} xs={3} /></Placeholder>}
               </td>
-              <td>{student["gender"] ? t("male") : t("female")}</td>
+              <td>{student["gender"] ? <><GenderMale className="me-1" />{t("male")}</> : <><GenderFemale className="me-1" />{t("female")}</>}</td>
             </tr>
           ))}
         </tbody>

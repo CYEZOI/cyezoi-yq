@@ -30,6 +30,8 @@ export default async function handler(
       userId: number,
       username: string,
       studentId: number,
+      permission: number,
+      lastOnline: Date,
     }> = [];
     await userModule.findAll({
       ...userIdList.length > 0 && {
@@ -43,6 +45,8 @@ export default async function handler(
           userId: record.getDataValue("userId"),
           username: record.getDataValue("username"),
           studentId: record.getDataValue("studentId"),
+          permission: record.getDataValue("permission"),
+          lastOnline: record.getDataValue("lastOnline"),
         });
       }
     }).catch((error: Error) => {
@@ -66,6 +70,29 @@ export default async function handler(
         studentId: request.params.studentId,
       }).then(() => {
         API.success(res, i18n.t("userCreateSuccess"));
+      }).catch((error: Error) => {
+        console.error(error.name + "  " + error.message);
+        API.failure(res, i18n.t("databaseError"));
+      });
+    }
+    else {
+      API.failure(res, i18n.t("invalidParameter"));
+    }
+  }
+  else if (req.method == "DELETE") {
+    i18n.changeLanguage(req.query.lang as string || "en");
+    if (await token.checkToken(req.query.token as string) == null) {
+      API.failure(res, i18n.t("unauthorized"));
+      return;
+    }
+
+    if (req.query.userId && typeof req.query.userId == "string") {
+      await userModule.destroy({
+        where: {
+          userId: parseInt(req.query.userId),
+        },
+      }).then(() => {
+        API.success(res, i18n.t("userDeleteSuccess"));
       }).catch((error: Error) => {
         console.error(error.name + "  " + error.message);
         API.failure(res, i18n.t("databaseError"));

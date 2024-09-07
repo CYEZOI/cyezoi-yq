@@ -3,8 +3,9 @@ import i18n from "@/i18n";
 import Head from "next/head";
 import useSWR from "swr";
 import { API } from "@/api";
-import { Button } from "react-bootstrap";
+import { Button, Table } from "react-bootstrap";
 import Link from "next/link";
+import { QuestionCircle } from "react-bootstrap-icons";
 
 export default function group() {
   const { t } = i18n;
@@ -59,10 +60,10 @@ export default function group() {
         </Head>
         <div>
           <h3>{t("group")}</h3>
-          <Link href={"https://langningchen.sharepoint.com/_layouts/15/guestaccess.aspx?guestaccesstoken=ARDuOKKlzxZuJS8m3taVedozZOLLVtLWxE18McaBo4yB&docid=1_1823989ae405b4a4297754384ec9f397c&wdFormId=%7BA0F92D2B%2D87CF%2D43AD%2DB760%2DBB1DEF8D3BE7%7D"} passHref>
-            <Button variant="outline-primary mb-3">{t("feedback")}</Button>
+          <Link href="https://langningchen.sharepoint.com/_layouts/15/guestaccess.aspx?guestaccesstoken=ARDuOKKlzxZuJS8m3taVedozZOLLVtLWxE18McaBo4yB&docid=1_1823989ae405b4a4297754384ec9f397c&wdFormId=%7BA0F92D2B%2D87CF%2D43AD%2DB760%2DBB1DEF8D3BE7%7D" target="_blank">
+            <Button variant="outline-primary mb-3"><QuestionCircle className="me-1" />{t("feedback")}</Button>
           </Link>
-          <table className="table table-bordered">
+          <Table>
             <thead>
               <tr>
                 <th>{t("groupId")}</th>
@@ -81,7 +82,7 @@ export default function group() {
                 </tr>
               )) : null}
             </tbody>
-          </table>
+          </Table>
         </div>
       </>
     );
@@ -95,7 +96,7 @@ export default function group() {
         {groupDataProvider ? groupDataProvider.group.find(group => group.groupId == groupId)?.groupName : null}
         <Button onClick={() => setGroupId(null)} className="ms-2" size="sm">{t("back")}</Button>
       </h3>
-      <table className="table table-bordered">
+      <Table>
         <thead>
           <tr>
             <th>{t("id")}</th>
@@ -110,7 +111,7 @@ export default function group() {
             </tr>
           )) : null}
         </tbody>
-      </table>
+      </Table>
     </>
   );
 }

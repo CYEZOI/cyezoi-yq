@@ -1,4 +1,4 @@
-import { API, APIRequest, APIResponse } from "@/api";
+import { API, APIResponse } from "@/api";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { financeModule } from "@/database";
 import i18n from "@/i18n";
@@ -22,8 +22,7 @@ export default async function handler(
       let balance: number = 0;
       let month: string = "";
       for (let record of records) {
-        const currentDate: Date = record.getDataValue("createdAt");
-        const currentMonth: string = currentDate.getFullYear() + "-" + (currentDate.getMonth() < 9 ? "0" : "") + (currentDate.getMonth() + 1);
+        const currentMonth: string = record.getDataValue("date").toString().slice(0, 7);
         if (month == "") {
           month = currentMonth;
         }
@@ -40,7 +39,7 @@ export default async function handler(
         balance += record.getDataValue("money");
       }
       response.records.push({ month, income, outcome, balance });
-      API.success(res, i18n.t("financeGetSuccess"), response);
+      API.success(res, i18n.t("financeStaticsGetSuccess"), response);
     }).catch((error: Error) => {
       console.error(error);
       API.failure(res, i18n.t("databaseError"));
