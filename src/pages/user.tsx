@@ -50,6 +50,7 @@ export default function user() {
             username: yup.string().typeError(t("requireString")).required(t("required")).min(4, t("minLen4")).max(16, t("maxLen16")),
             password: yup.string().typeError(t("requireString")).required(t("required")).min(8, t("minLen8")).max(64, t("maxLen64")).matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{}|;':",.<>\/?]).{8,64}$/, t("requireStrongPassword")),
             studentId: yup.number().typeError(t("requireNumber")).required(t("required")).min(1, t("min1")).max(38, t("max38")),
+            permission: yup.number().typeError(t("requireNumber")).required(t("required")).min(0, t("min0")),
           })}
           onSubmit={(params: object) => {
             API.Post("user", { params }, {
@@ -58,13 +59,13 @@ export default function user() {
               }
             });
           }}
-          initialValues={{ username: "", password: "", studentId: 0 }}
+          initialValues={{ username: "", password: "", studentId: 0, permission: 5 }}
         >
           {(props) => {
             const { handleSubmit, handleChange, handleBlur, values, touched, errors } = props;
-            const valuesProvider = values as { username: string, password: string, studentId: string };
-            const touchedProvider = touched as { username: boolean, password: boolean, studentId: boolean };
-            const errorsProvider = errors as { username: string, password: string, studentId: string };
+            const valuesProvider = values as { username: string, password: string, studentId: number, permission: number };
+            const touchedProvider = touched as { username: boolean, password: boolean, studentId: boolean, permission: boolean };
+            const errorsProvider = errors as { username: string, password: string, studentId: string, permission: string };
             return <Form noValidate onSubmit={handleSubmit}>
               <Row>
                 <Col><InputGroup>
@@ -81,6 +82,11 @@ export default function user() {
                   <InputGroup.Text>{t("studentId")}</InputGroup.Text>
                   <Form.Control type="number" name="studentId" value={valuesProvider.studentId} onChange={handleChange} onBlur={handleBlur} isInvalid={touchedProvider.studentId && errorsProvider.studentId != null} />
                   <Form.Control.Feedback type="invalid">{errorsProvider.studentId}</Form.Control.Feedback>
+                </InputGroup></Col>
+                <Col><InputGroup>
+                  <InputGroup.Text>{t("permission")}</InputGroup.Text>
+                  <Form.Control type="number" name="permission" value={valuesProvider.permission} onChange={handleChange} onBlur={handleBlur} isInvalid={touchedProvider.permission && errorsProvider.permission != null} />
+                  <Form.Control.Feedback type="invalid">{errorsProvider.permission}</Form.Control.Feedback>
                 </InputGroup></Col>
                 <Col><Button type="submit">{t("create")}</Button></Col>
               </Row>

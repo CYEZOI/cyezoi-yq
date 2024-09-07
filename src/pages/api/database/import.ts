@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import * as database from "@/database";
 import { API, APIResponse } from "@/api";
+import { permission } from "process";
 
 const Data = {
     "roles": [
@@ -72,7 +73,7 @@ export default async function handler(
     await database.groupMemberModule.truncate();
     await database.privilegeRecordModule.truncate();
 
-    await database.userModule.create({ username: "langningchen", password: "1!2@3#qQwWeE", studentId: 6 });
+    await database.userModule.create({ username: "langningchen", password: "1!2@3#qQwWeE", studentId: 6, permission: 5 });
 
     for (const role of Data.roles) {
         await database.roleModule.create({ roleId: role.id, roleName: role.name });

@@ -63,11 +63,12 @@ export default async function handler(
       return;
     }
 
-    if (request.params.username && request.params.password && request.params.studentId) {
+    if (request.params.username && request.params.password && request.params.studentId && request.params.permission) {
       await userModule.create({
         username: request.params.username,
         password: request.params.password,
         studentId: request.params.studentId,
+        permission: request.params.permission,
       }).then(() => {
         API.success(res, i18n.t("userCreateSuccess"));
       }).catch((error: Error) => {
