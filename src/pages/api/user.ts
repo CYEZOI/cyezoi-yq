@@ -1,4 +1,4 @@
-import { API, APIResponse } from "@/api";
+import { API, APIRequest, APIResponse } from "@/api";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { userModule } from "@/database";
 import i18n from "@/i18n";
@@ -52,17 +52,18 @@ export default async function handler(
     API.success(res, i18n.t("userGetSuccess"), { user: userData });
   }
   else if (req.method == "POST") {
-    i18n.changeLanguage(req.query.lang as string || "en");
-    if (await token.checkToken(req.query.token as string) == null) {
+    const request: APIRequest = req.body;
+    i18n.changeLanguage(request.lang || "en");
+    if (await token.checkToken(request.token as string) == null) {
       API.failure(res, i18n.t("unauthorized"));
       return;
     }
 
-    if (req.body.username && req.body.password && req.body.studentId) {
+    if (request.params.username && request.params.password && request.params.studentId) {
       await userModule.create({
-        username: req.body.username,
-        password: req.body.password,
-        studentId: req.body.studentId,
+        username: request.params.username,
+        password: request.params.password,
+        studentId: request.params.studentId,
       }).then(() => {
         API.success(res, i18n.t("userCreateSuccess"));
       }).catch((error: Error) => {

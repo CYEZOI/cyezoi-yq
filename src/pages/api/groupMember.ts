@@ -68,7 +68,7 @@ export default async function handler(
   else if (req.method == "POST") {
     const request: APIRequest = req.body;
     i18n.changeLanguage(request.lang || "en");
-    if (await token.checkToken(req.query.token as string) == null) {
+    if (await token.checkToken(request.token as string) == null) {
       API.failure(res, i18n.t("unauthorized"));
       return;
     }
