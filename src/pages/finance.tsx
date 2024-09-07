@@ -9,7 +9,7 @@ import Head from "next/head";
 import { Col, Row, Table } from "react-bootstrap";
 import { API } from "@/api";
 import useSWR from "swr";
-import { Bar, CartesianGrid, Line, BarChart, Tooltip, XAxis, YAxis, ResponsiveContainer } from "recharts";
+import { Bar, CartesianGrid, Line, BarChart, Tooltip, XAxis, YAxis, ResponsiveContainer, LineChart } from "recharts";
 import { Trash } from "react-bootstrap-icons";
 
 export default function finance() {
@@ -104,6 +104,15 @@ export default function finance() {
           </Form>;
         }}
       </Formik >
+      <ResponsiveContainer width="100%" height={300}>
+        <LineChart width={600} height={300} data={financeStaticsDataProvider && financeStaticsDataProvider.records} >
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="month" />
+          <YAxis />
+          <Tooltip />
+          <Line type="monotone" dataKey="balance" stroke="#ff7300" name={t("balance")} />
+        </LineChart>
+      </ResponsiveContainer>
       <ResponsiveContainer width="100%" height={300}>
         <BarChart width={600} height={300} data={financeStaticsDataProvider && financeStaticsDataProvider.records} >
           <CartesianGrid strokeDasharray="3 3" />
