@@ -5,9 +5,22 @@ import * as yup from "yup";
 import { API } from "@/api";
 import { Button, FloatingLabel, Form } from "react-bootstrap";
 import { pipeInstance } from "@/pipe";
+import { useEffect, useState } from "react";
 
 export default function login() {
   const { t } = t18n;
+
+  const [defaultUsername, setDefaultUsername] = useState<string>("");
+  const [defaultPassword, setDefaultPassword] = useState<string>("");
+
+  useEffect(() => {
+    if (typeof location !== "undefined") {
+      const searchParams = new URLSearchParams(location.search);
+      setDefaultUsername(searchParams.get("username") || "");
+      setDefaultPassword(searchParams.get("password") || "");
+    }
+  });
+
   return (
     <>
       <Head>
@@ -42,7 +55,7 @@ export default function login() {
               });
             },
           });
-        }} initialValues={{ username: "", password: "", }}>
+        }} initialValues={{ username: defaultUsername, password: defaultPassword, }} enableReinitialize={true}>
         {(props) => {
           const { handleSubmit, handleChange, handleBlur, values, touched, errors } = props;
           const valuesProvider = values as { username: string, password: string };
@@ -60,7 +73,7 @@ export default function login() {
             <Button type="submit">{t("login")}</Button>
           </Form>;
         }}
-      </Formik>
+      </Formik >
     </>
   );
 }

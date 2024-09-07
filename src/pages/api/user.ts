@@ -51,6 +51,29 @@ export default async function handler(
     });
     API.success(res, i18n.t("userGetSuccess"), { user: userData });
   }
+  else if (req.method == "POST") {
+    i18n.changeLanguage(req.query.lang as string || "en");
+    if (await token.checkToken(req.query.token as string) == null) {
+      API.failure(res, i18n.t("unauthorized"));
+      return;
+    }
+
+    if (req.body.username && req.body.password && req.body.studentId) {
+      await userModule.create({
+        username: req.body.username,
+        password: req.body.password,
+        studentId: req.body.studentId,
+      }).then(() => {
+        API.success(res, i18n.t("userCreateSuccess"));
+      }).catch((error: Error) => {
+        console.error(error.name + "  " + error.message);
+        API.failure(res, i18n.t("databaseError"));
+      });
+    }
+    else {
+      API.failure(res, i18n.t("invalidParameter"));
+    }
+  }
   else {
     API.failure(res, i18n.t("invalidMethod"));
   }

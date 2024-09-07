@@ -47,10 +47,9 @@ export default async function handler(
       return;
     }
 
-    const request: any = req.query;
     await financeModule.destroy({
       where: {
-        financeId: request.get("financeId"),
+        financeId: req.query.financeId,
       },
     }).then(() => {
       API.success(res, i18n.t("financeDeleteSuccess"));
