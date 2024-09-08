@@ -144,10 +144,10 @@ export default async function handler(
       });
     }
     else if (typeof userId_query === "number" && typeof permission === "number") {
-      // if ((await permission_.getPermission(userId)).checkPermission(permission_.PERMISSION_UPDATE_PRIVILEGE) == false) {
-      //   API.failure(res, i18n.t("permissionDenied"));
-      //   return;
-      // }
+      if ((await permission_.getPermission(userId)).checkPermission(permission_.PERMISSION_UPDATE_PRIVILEGE) == false) {
+        API.failure(res, i18n.t("permissionDenied"));
+        return;
+      }
 
       await userModule.update({
         permission,

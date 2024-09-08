@@ -62,36 +62,6 @@ export default async function handler(
       API.failure(res, i18n.t("databaseError"));
     });
     API.success(res, i18n.t("roleMemberGetSuccess"), { student: studentData });
-
-    // var student: Array<number> = [];
-    // for (const _ of studentIdList.split(",")) {
-    //   if (!utilities.isValidNumber(_)) {
-    //     API.failure(res, i18n.t("invalidParameter")); return;
-    //   }
-    //   student.push(parseInt(_));
-    // }
-    // var studentData: Array<{
-    //   studentId: number,
-    //   role: Array<number>,
-    // }> = [];
-    // await roleMemberModule.findAll({
-    //   ...student.length > 0 && {
-    //     where: {
-    //       student,
-    //     },
-    //   },
-    // }).then(records => {
-    //   for (const _ of records) {
-    //     studentData.push({
-    //       studentId: _.getDataValue("student"),
-    //       role: [_.getDataValue("role")],
-    //     });
-    //   }
-    // }).catch((error: Error) => {
-    //   console.error(error.name + "  " + error.message);
-    //   API.failure(res, i18n.t("databaseError"));
-    // });
-    // API.success(res, i18n.t("roleMemberGetSuccess"), { student: studentData });
   }
   else if (req.method == "POST") {
     const request: APIRequest = req.body;
