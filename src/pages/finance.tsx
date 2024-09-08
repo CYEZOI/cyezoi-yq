@@ -9,7 +9,7 @@ import Head from "next/head";
 import { Col, Row, Table } from "react-bootstrap";
 import { API } from "@/api";
 import useSWR from "swr";
-import { Bar, CartesianGrid, Line, BarChart, Tooltip, XAxis, YAxis, ResponsiveContainer } from "recharts";
+import { Bar, CartesianGrid, Line, BarChart, Tooltip, XAxis, YAxis, ResponsiveContainer, LineChart } from "recharts";
 import { Trash } from "react-bootstrap-icons";
 
 export default function finance() {
@@ -30,7 +30,7 @@ export default function finance() {
     records: {
       month: string,
       income: number,
-      outcome: number,
+      expenditure: number,
       balance: number,
     }[]
   }
@@ -80,7 +80,7 @@ export default function finance() {
                 <Form.Control.Feedback type="invalid">{errorsProvider.type}</Form.Control.Feedback>
               </Col>
               <Col className="col-3 col-sm-2 col-lg-1">
-                <Form.Check type="radio" name="type" value="outcome" onChange={handleChange} label={t("outcome")} isInvalid={touchedProvider.type && errorsProvider.type != null} />
+                <Form.Check type="radio" name="type" value="expenditure" onChange={handleChange} label={t("expenditure")} isInvalid={touchedProvider.type && errorsProvider.type != null} />
                 <Form.Control.Feedback type="invalid">{errorsProvider.type}</Form.Control.Feedback>
               </Col>
               <Col className="col-6 col-sm-4 col-lg-2"><InputGroup hasValidation>
@@ -105,13 +105,22 @@ export default function finance() {
         }}
       </Formik >
       <ResponsiveContainer width="100%" height={300}>
+        <LineChart width={600} height={300} data={financeStaticsDataProvider && financeStaticsDataProvider.records} >
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="month" />
+          <YAxis />
+          <Tooltip />
+          <Line type="monotone" dataKey="balance" stroke="#ff7300" name={t("balance")} />
+        </LineChart>
+      </ResponsiveContainer>
+      <ResponsiveContainer width="100%" height={300}>
         <BarChart width={600} height={300} data={financeStaticsDataProvider && financeStaticsDataProvider.records} >
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="month" />
           <YAxis />
           <Tooltip />
           <Bar dataKey="income" fill="#8884d8" name={t("income")} />
-          <Bar dataKey="outcome" fill="#82ca9d" name={t("outcome")} />
+          <Bar dataKey="expenditure" fill="#82ca9d" name={t("expenditure")} />
           <Line type="monotone" dataKey="balance" stroke="#ff7300" />
         </BarChart>
       </ResponsiveContainer>

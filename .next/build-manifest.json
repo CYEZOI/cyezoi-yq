@@ -5,8 +5,8 @@
   "devFiles": [],
   "ampDevFiles": [],
   "lowPriorityFiles": [
-    "static/Qt2ep9lenLLuftEjyHQug/_buildManifest.js",
-    "static/Qt2ep9lenLLuftEjyHQug/_ssgManifest.js"
+    "static/vXD0cAR1hNNKFHaR8AH5S/_buildManifest.js",
+    "static/vXD0cAR1hNNKFHaR8AH5S/_ssgManifest.js"
   ],
   "rootMainFiles": [],
   "pages": {
@@ -27,7 +27,7 @@
       "static/chunks/framework-a85322f027b40e20.js",
       "static/chunks/main-df99cd4a3cbdd838.js",
       "static/css/0fdd3f077818801d.css",
-      "static/chunks/pages/_app-2ec80ccd722067ca.js"
+      "static/chunks/pages/_app-b41a6c54786d84f6.js"
     ],
     "/_error": [
       "static/chunks/webpack-38cee4c0e358b1a3.js",
@@ -41,8 +41,8 @@
       "static/chunks/main-df99cd4a3cbdd838.js",
       "static/chunks/368-1e831bfba244fd58.js",
       "static/chunks/4-03b53d6e69c7538a.js",
-      "static/chunks/550-9c69ab89c5e61233.js",
-      "static/chunks/pages/finance-5e4bab9c52ae428f.js"
+      "static/chunks/34-a11bff033efc89d7.js",
+      "static/chunks/pages/finance-af677274ca0d85e7.js"
     ],
     "/group": [
       "static/chunks/webpack-38cee4c0e358b1a3.js",
