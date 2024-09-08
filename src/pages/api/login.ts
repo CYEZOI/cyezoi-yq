@@ -10,15 +10,12 @@ export default async function handler(
 ) {
   if (req.method == "GET") {
     i18n.changeLanguage(req.query.lang as string || "en");
+    var username = req.query.username;
+    var password = req.query.password;
+    if (typeof username !== "string" || typeof password !== "string") {
+      API.failure(res, i18n.t("invalidParameter")); return;
+    }
 
-    var username: string = "";
-    var password: string = "";
-    if (req.query.username && typeof req.query.username == "string") {
-      username = req.query.username;
-    }
-    if (req.query.password && typeof req.query.password == "string") {
-      password = req.query.password;
-    }
     var userId: number = 0;
     await userModule.findOne({
       where: {
@@ -30,17 +27,16 @@ export default async function handler(
         API.failure(res, i18n.t("userNotFound"));
         return;
       }
-      else if (new permission(user.getDataValue("permission")).checkPermission(permission.PERMISSION_LOGIN)) {
+      else if (new permission(user.getDataValue("permission")).checkPermission(permission.PERMISSION_LOGIN) == false) {
         API.failure(res, i18n.t("permissionDenied"));
         return;
       }
-      else {
-        userId = user.getDataValue("userId");
-      }
+      userId = user.getDataValue("userId");
     }).catch((error: Error) => {
       console.error(error);
       API.failure(res, i18n.t("databaseError"));
     });
+
     var token: string = "";
     for (let i = 0; i < 64; i++) {
       token += String.fromCharCode(Math.floor(Math.random() * 26) + 97);

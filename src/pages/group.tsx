@@ -94,7 +94,7 @@ export default function group() {
       </Head>
       <h3>
         {groupDataProvider ? groupDataProvider.group.find(group => group.groupId == groupId)?.groupName : null}
-        <Button onClick={() => setGroupId(null)} className="ms-2" size="sm">{t("back")}</Button>
+        <Button onClick={() => setGroupId(null)} className="ms-2" size="sm">{t("allGroups")}</Button>
       </h3>
       <Table>
         <thead>

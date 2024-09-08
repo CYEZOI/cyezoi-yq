@@ -6,7 +6,7 @@ import { API } from "@/api";
 import { Button, Col, Form, InputGroup, Placeholder, Row, Table } from "react-bootstrap";
 import { Formik } from "formik";
 import * as yup from "yup";
-import { Trash } from "react-bootstrap-icons";
+import { Key, Question, Trash } from "react-bootstrap-icons";
 
 export default function user() {
   const { t } = i18n;
@@ -56,7 +56,7 @@ export default function user() {
             API.Post("user", { params }, {
               success: () => {
                 mutate();
-              }
+              }, showSuccess: true,
             });
           }}
           initialValues={{ username: "", password: "", studentId: 0, permission: 5 }}
@@ -100,7 +100,6 @@ export default function user() {
               <th>{t("username")}</th>
               <th>{t("studentId")}</th>
               <th>{t("studentName")}</th>
-              <th>{t("permission")}</th>
               <th>{t("lastOnline")}</th>
               <th>{t("operation")}</th>
             </tr>
@@ -115,15 +114,28 @@ export default function user() {
                   ? studentDataProvider.student.find(student => student.studentId == user.studentId)?.studentName
                   : <Placeholder className="ms-2" animation="wave"><Placeholder as={Col} xs={12} /></Placeholder>
                 }</td>
-                <td>{user.permission}</td>
                 <td>{new Date(user.lastOnline).toLocaleString()}</td>
-                <td><Button onClick={() => {
-                  API.Delete("user", { userId: user.userId.toString() }, {
-                    success: () => {
-                      mutate();
-                    }
-                  });
-                }} variant="danger" size="sm"><Trash className="me-1" />{t("delete")}</Button></td>
+                <td>
+                  <Button onClick={() => {
+                    location.href = "/password?username=" + user.username;
+                  }} variant="outline-success" size="sm" className="me-2">
+                    <Question className="me-1" />{t("password")}
+                  </Button>
+                  <Button onClick={() => {
+                    location.href = "/permission?userId=" + user.userId;
+                  }} variant="outline-warning" size="sm" className="me-2">
+                    <Key className="me-1" />{t("permission")}
+                  </Button>
+                  <Button onClick={() => {
+                    API.Delete("user", { userId: user.userId.toString() }, {
+                      success: () => {
+                        mutate();
+                      }, showSuccess: true
+                    });
+                  }} variant="danger" size="sm">
+                    <Trash className="me-1" />{t("delete")}
+                  </Button>
+                </td>
               </tr>
             ))}
           </tbody>

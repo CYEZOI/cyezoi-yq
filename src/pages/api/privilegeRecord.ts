@@ -3,6 +3,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { privilegeRecordModule } from "@/database";
 import i18n from "@/i18n";
 import { token } from "@/token";
+import { utilities } from "@/utilities";
 
 export default async function handler(
   req: NextApiRequest,
@@ -14,16 +15,15 @@ export default async function handler(
       API.failure(res, i18n.t("unauthorized"));
       return;
     }
-
-    var page: number = 1;
-    if (req.query.page && typeof req.query.page == "string") {
-      const pageNumber = parseInt(req.query.page);
-      if (isNaN(pageNumber) || pageNumber < 1 || pageNumber == Infinity) {
-        API.failure(res, "Invalid page");
-        return;
-      }
-      page = pageNumber;
+    const page = req.query.page;
+    if (typeof page !== "string") {
+      API.failure(res, i18n.t("invalidParameter")); return;
     }
+
+    if (!utilities.isValidNumber(page)) {
+      API.failure(res, i18n.t("invalidParameter")); return;
+    }
+    var offset: number = (parseInt(page) - 1) * 10;
     var privilegeRecord: Array<{
       privilegeRecordId: number,
       date: string,
@@ -35,17 +35,17 @@ export default async function handler(
     }> = [];
     await privilegeRecordModule.findAll({
       limit: 10,
-      offset: (page - 1) * 10,
+      offset,
     }).then(records => {
-      for (const record of records) {
+      for (const _ of records) {
         privilegeRecord.push({
-          privilegeRecordId: record.getDataValue("privilegeRecordId"),
-          date: record.getDataValue("date"),
-          student: record.getDataValue("student"),
-          io: record.getDataValue("io"),
-          type: record.getDataValue("type"),
-          value: record.getDataValue("value"),
-          reason: record.getDataValue("reason"),
+          privilegeRecordId: _.getDataValue("privilegeRecordId"),
+          date: _.getDataValue("date"),
+          student: _.getDataValue("student"),
+          io: _.getDataValue("io"),
+          type: _.getDataValue("type"),
+          value: _.getDataValue("value"),
+          reason: _.getDataValue("reason"),
         });
       }
     }).catch((error: Error) => {

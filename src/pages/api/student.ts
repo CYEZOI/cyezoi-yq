@@ -3,6 +3,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { studentModule } from "@/database";
 import i18n from "@/i18n";
 import { token } from "@/token";
+import { utilities } from "@/utilities";
 
 export default async function handler(
   req: NextApiRequest,
@@ -14,16 +15,15 @@ export default async function handler(
       API.failure(res, i18n.t("unauthorized"));
       return;
     }
+    const studentIdList = req.query.studentIdList;
 
-    var studentIdList: Array<number> = [];
-    if (req.query.studentIdList && typeof req.query.studentIdList == "string") {
-      for (const studentId of req.query.studentIdList.split(",")) {
-        const studentIdNumber = parseInt(studentId);
-        if (isNaN(studentIdNumber) || studentIdNumber < 0 || studentIdNumber == Infinity) {
-          API.failure(res, "Invalid studentIdList");
-          return;
+    var studentId: Array<number> = [];
+    if (typeof studentIdList == "string") {
+      for (const _ of studentIdList.split(",")) {
+        if (!utilities.isValidNumber(_)) {
+          API.failure(res, i18n.t("invalidParameter")); return;
         }
-        studentIdList.push(studentIdNumber);
+        studentId.push(parseInt(_));
       }
     }
     var student: Array<{
@@ -32,9 +32,9 @@ export default async function handler(
       gender: boolean,
     }> = [];
     await studentModule.findAll({
-      ...studentIdList.length > 0 && {
+      ...studentId.length > 0 && {
         where: {
-          studentId: studentIdList,
+          studentId,
         },
       },
     }).then(records => {

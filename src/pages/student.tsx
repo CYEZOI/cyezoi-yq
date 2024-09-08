@@ -50,7 +50,7 @@ export default function student() {
 
   const { data: roleMemberData } = useSWR(() => {
     const student = studentDataProvider.student.map(student => student.studentId).join(",");
-    return student ? "roleMember?student=" + student : null;
+    return student ? "roleMember?studentIdList=" + student : null;
   }, API.SWRGet);
   const roleMemberDataProvider = roleMemberData as {
     student: Array<{
@@ -61,7 +61,7 @@ export default function student() {
 
   const { data: roleData } = useSWR(() => {
     const role = roleMemberDataProvider ? roleMemberDataProvider.student.map(roleMember => roleMember.role).join(",") : null;
-    return role ? "role?roleId=" + role : null;
+    return role ? "role?roleIdList=" + role : null;
   }, API.SWRGet);
   const roleDataProvider = roleData as {
     role: Array<{

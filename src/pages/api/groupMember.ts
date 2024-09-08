@@ -3,6 +3,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { groupMemberModule } from "@/database";
 import i18n from "@/i18n";
 import { token } from "@/token";
+import { utilities } from "@/utilities";
 
 export default async function handler(
   req: NextApiRequest,
@@ -14,27 +15,25 @@ export default async function handler(
       API.failure(res, i18n.t("unauthorized"));
       return;
     }
+    const studentIdList = req.query.studentIdList;
+    const groupIdList = req.query.groupIdList;
 
-    var studentIdList: Array<number> = [];
-    var groupIdList: Array<number> = [];
-    if (req.query.studentIdList && typeof req.query.studentIdList == "string") {
-      for (const studentId of req.query.studentIdList.split(",")) {
-        const studentIdNumber = parseInt(studentId);
-        if (isNaN(studentIdNumber) || studentIdNumber < 0 || studentIdNumber == Infinity) {
-          API.failure(res, "Invalid student");
-          return;
+    var student: Array<number> = [];
+    var group: Array<number> = [];
+    if (typeof studentIdList === "string") {
+      for (const _ of studentIdList.split(",")) {
+        if (!utilities.isValidNumber(_)) {
+          API.failure(res, i18n.t("invalidParameter")); return;
         }
-        studentIdList.push(studentIdNumber);
+        student.push(parseInt(_));
       }
     }
-    if (req.query.groupIdList && typeof req.query.groupIdList == "string") {
-      for (const groupId of req.query.groupIdList.split(",")) {
-        const groupIdNumber = parseInt(groupId);
-        if (isNaN(groupIdNumber) || groupIdNumber < 0 || groupIdNumber == Infinity) {
-          API.failure(res, "Invalid group");
-          return;
+    if (typeof groupIdList === "string") {
+      for (const _ of groupIdList.split(",")) {
+        if (!utilities.isValidNumber(_)) {
+          API.failure(res, i18n.t("invalidParameter")); return;
         }
-        groupIdList.push(groupIdNumber);
+        group.push(parseInt(_));
       }
     }
     var studentData: Array<{
@@ -45,17 +44,17 @@ export default async function handler(
       }>,
     }> = [];
     var whereObject: any = {};
-    if (studentIdList.length > 0) whereObject.student = studentIdList;
-    if (groupIdList.length > 0) whereObject.group = groupIdList;
+    if (student.length > 0) whereObject.student = student;
+    if (group.length > 0) whereObject.group = group;
     await groupMemberModule.findAll({
       where: whereObject,
     }).then(records => {
-      for (const record of records) {
+      for (const _ of records) {
         studentData.push({
-          studentId: record.getDataValue("student"),
+          studentId: _.getDataValue("student"),
           group: [{
-            groupId: record.getDataValue("group"),
-            leader: record.getDataValue("leader"),
+            groupId: _.getDataValue("group"),
+            leader: _.getDataValue("leader"),
           }],
         });
       }
@@ -72,14 +71,13 @@ export default async function handler(
       API.failure(res, i18n.t("unauthorized"));
       return;
     }
-
     const student = request.params.student;
     const group = request.params.group;
     const leader = request.params.leader;
-    if (typeof student != "number" || typeof group != "number" || typeof leader != "boolean") {
-      API.failure(res, "Invalid parameters");
-      return;
+    if (typeof student !== "number" || typeof group !== "string" || typeof leader !== "number") {
+      API.failure(res, i18n.t("invalidParameter")); return;
     }
+
     await groupMemberModule.create({
       student,
       group,

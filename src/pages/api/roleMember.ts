@@ -3,6 +3,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { roleMemberModule } from "@/database";
 import i18n from "@/i18n";
 import { token } from "@/token";
+import { utilities } from "@/utilities";
 
 export default async function handler(
   req: NextApiRequest,
@@ -14,33 +15,33 @@ export default async function handler(
       API.failure(res, i18n.t("unauthorized"));
       return;
     }
+    const studentIdList = req.query.studentIdList;
+    if (typeof studentIdList !== "string") {
+      API.failure(res, i18n.t("invalidParameter")); return;
+    }
 
-    var studentIdList: Array<number> = [];
-    if (req.query.studentIdList && typeof req.query.studentIdList == "string") {
-      for (const studentId of req.query.studentIdList.split(",")) {
-        const studentIdNumber = parseInt(studentId);
-        if (isNaN(studentIdNumber) || studentIdNumber < 0 || studentIdNumber == Infinity) {
-          API.failure(res, "Invalid student");
-          return;
-        }
-        studentIdList.push(studentIdNumber);
+    var student: Array<number> = [];
+    for (const _ of studentIdList.split(",")) {
+      if (!utilities.isValidNumber(_)) {
+        API.failure(res, i18n.t("invalidParameter")); return;
       }
+      student.push(parseInt(_));
     }
     var studentData: Array<{
       studentId: number,
       role: Array<number>,
     }> = [];
     await roleMemberModule.findAll({
-      ...studentIdList.length > 0 && {
+      ...student.length > 0 && {
         where: {
-          student: studentIdList,
+          student,
         },
       },
     }).then(records => {
-      for (const record of records) {
+      for (const _ of records) {
         studentData.push({
-          studentId: record.getDataValue("student"),
-          role: [record.getDataValue("role")],
+          studentId: _.getDataValue("student"),
+          role: [_.getDataValue("role")],
         });
       }
     }).catch((error: Error) => {
@@ -56,14 +57,13 @@ export default async function handler(
       API.failure(res, i18n.t("unauthorized"));
       return;
     }
-
     const student = request.params.student;
     const role = request.params.role;
     const leader = request.params.leader;
-    if (typeof student != "number" || typeof role != "number" || typeof leader != "boolean") {
-      API.failure(res, "Invalid parameters");
-      return;
+    if (typeof student !== "number" || typeof role !== "number" || typeof leader !== "number") {
+      API.failure(res, i18n.t("invalidParameter")); return;
     }
+
     await roleMemberModule.create({
       student,
       role,
@@ -81,13 +81,12 @@ export default async function handler(
       API.failure(res, i18n.t("unauthorized"));
       return;
     }
-
     const student = req.body.params.student;
     const role = req.body.params.role;
-    if (typeof student != "number" || typeof role != "number") {
-      API.failure(res, "Invalid parameters");
-      return;
+    if (typeof student !== "string" || !utilities.isValidNumber(student) || typeof role !== "string" || !utilities.isValidNumber(role)) {
+      API.failure(res, i18n.t("invalidParameter")); return;
     }
+
     await roleMemberModule.destroy({
       where: {
         student,

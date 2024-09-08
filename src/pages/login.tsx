@@ -4,7 +4,6 @@ import { Formik } from "formik";
 import * as yup from "yup";
 import { API } from "@/api";
 import { Button, FloatingLabel, Form } from "react-bootstrap";
-import { pipeInstance } from "@/pipe";
 import { useEffect, useState } from "react";
 
 export default function login() {
@@ -35,17 +34,17 @@ export default function login() {
         onSubmit={(params: object) => {
           const values = params as { username: string, password: string };
           API.Get("login", values, {
-            success: (response: any) => {
+            success: (response) => {
               const userId = response.userId;
               const token = response.token;
               localStorage.setItem("userId", userId);
               localStorage.setItem("token", token);
               API.Get("user", { userIdList: userId }, {
-                success: (response: any) => {
+                success: (response) => {
                   const studentId = response.user[0].studentId;
                   localStorage.setItem("studentId", studentId);
                   API.Get("student", { studentIdList: studentId }, {
-                    success: (response: any) => {
+                    success: (response) => {
                       const studentName = response.student[0].studentName;
                       localStorage.setItem("studentName", studentName);
                       location.href = "/";

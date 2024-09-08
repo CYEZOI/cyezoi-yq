@@ -2,6 +2,7 @@ import { API, APIResponse } from "@/api";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { roleModule } from "@/database";
 import i18n from "@/i18n";
+import { utilities } from "@/utilities";
 
 export default async function handler(
   req: NextApiRequest,
@@ -9,25 +10,26 @@ export default async function handler(
 ) {
   if (req.method == "GET") {
     i18n.changeLanguage(req.query.lang as string || "en");
-    var roleIdList: Array<number> = [];
-    if (req.query.roleId && typeof req.query.roleId == "string") {
-      for (const roleId of req.query.roleId.split(",")) {
-        const roleIdNumber = parseInt(roleId);
-        if (isNaN(roleIdNumber) || roleIdNumber < 0 || roleIdNumber == Infinity) {
-          API.failure(res, "Invalid role");
-          return;
-        }
-        roleIdList.push(roleIdNumber);
+    const roleIdList = req.query.roleIdList;
+    if (typeof roleIdList !== "string") {
+      API.failure(res, i18n.t("invalidParameter")); return;
+    }
+
+    var roleId: Array<number> = [];
+    for (const _ of roleIdList.split(",")) {
+      if (!utilities.isValidNumber(_)) {
+        API.failure(res, i18n.t("invalidParameter")); return;
       }
+      roleId.push(parseInt(_));
     }
     var roleData: Array<{
       roleId: number,
       roleName: string,
     }> = [];
     await roleModule.findAll({
-      ...roleIdList.length > 0 && {
+      ...roleId.length > 0 && {
         where: {
-          roleId: roleIdList,
+          roleId,
         },
       },
     }).then(records => {

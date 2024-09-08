@@ -75,21 +75,21 @@ export default async function handler(
 
     await database.userModule.create({ username: "langningchen", password: "1!2@3#qQwWeE", studentId: 6, permission: 5 });
 
-    for (const role of Data.roles) {
-        await database.roleModule.create({ roleId: role.id, roleName: role.name });
+    for (const _ of Data.roles) {
+        await database.roleModule.create({ roleId: _.id, roleName: _.name });
     }
-    for (const group of Data.groups) {
-        await database.groupModule.create({ groupId: group.id, groupName: group.name });
+    for (const _ of Data.groups) {
+        await database.groupModule.create({ groupId: _.id, groupName: _.name });
     }
-    for (const person of Data.people) {
-        await database.studentModule.create({ studentId: person.id, studentName: person.name, gender: person.gender });
-        for (const role of person.roles) {
-            await database.roleMemberModule.create({ role: role, student: person.id });
-            await database.privilegeRecordModule.create({ date: "20240829", student: person.id, io: true, type: "role", value: role, reason: "班主任评选" });
+    for (const _ of Data.people) {
+        await database.studentModule.create({ studentId: _.id, studentName: _.name, gender: _.gender });
+        for (const __ of _.roles) {
+            await database.roleMemberModule.create({ role: __, student: _.id });
+            await database.privilegeRecordModule.create({ date: "20240829", student: _.id, io: true, type: "role", value: __, reason: "班主任评选" });
         }
-        for (const group of person.groups) {
-            await database.groupMemberModule.create({ group: group.id, student: person.id, leader: group.leader });
-            await database.privilegeRecordModule.create({ date: "20240829", student: person.id, io: true, type: "group", value: group.id, reason: "选择加入组" });
+        for (const __ of _.groups) {
+            await database.groupMemberModule.create({ group: __.id, student: _.id, leader: __.leader });
+            await database.privilegeRecordModule.create({ date: "20240829", student: _.id, io: true, type: "group", value: __.id, reason: "选择加入组" });
         }
     }
     API.success(res, "Imported successfully");

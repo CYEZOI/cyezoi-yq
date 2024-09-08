@@ -1,9 +1,11 @@
 import { userModule } from "./database";
 
 export class permission {
-    public static PERMISSION_LOGIN = 1;
-    public static PERMISSION_FINANCE_WRITE = 2;
-    public static PERMISSION_CREATE_USER = 3;
+    public static PERMISSION_LOGIN = 0;
+    public static PERMISSION_FINANCE_WRITE = 1;
+    public static PERMISSION_CREATE_USER = 2;
+    public static PERMISSION_LIST_USER = 3;
+    public static PERMISSION_UPDATE_OTHER_PASSWORD = 4;
 
     private permissionNumber: number;
     constructor(permissionNumber: number) { this.permissionNumber = permissionNumber; }

@@ -4,6 +4,7 @@ import { financeModule } from "@/database";
 import i18n from "@/i18n";
 import { token } from "@/token";
 import { permission } from "@/permission";
+import { utilities } from "@/utilities";
 
 export default async function handler(
   req: NextApiRequest,
@@ -35,11 +36,17 @@ export default async function handler(
       API.failure(res, i18n.t("permissionDenied"));
       return;
     }
+    const date = request.params.date;
+    const money = request.params.money;
+    const detail = request.params.detail;
+    if (typeof date !== "string" || typeof money !== "string" || typeof detail !== "string") {
+      API.failure(res, i18n.t("invalidParameter")); return;
+    }
 
     await financeModule.create({
-      date: request.params.date,
-      money: request.params.money,
-      detail: request.params.detail,
+      date,
+      money,
+      detail,
     }).then(() => {
       API.success(res, i18n.t("financeCreateSuccess"));
     }).catch((error: Error) => {
@@ -53,10 +60,14 @@ export default async function handler(
       API.failure(res, i18n.t("unauthorized"));
       return;
     }
+    const financeId = req.query.financeId;
+    if (typeof financeId !== "string" || !utilities.isValidNumber(financeId)) {
+      API.failure(res, i18n.t("invalidParameter")); return;
+    }
 
     await financeModule.destroy({
       where: {
-        financeId: req.query.financeId,
+        financeId,
       },
     }).then(() => {
       API.success(res, i18n.t("financeDeleteSuccess"));
@@ -72,13 +83,19 @@ export default async function handler(
       API.failure(res, i18n.t("unauthorized"));
       return;
     }
+    const money = request.params.money;
+    const detail = request.params.detail;
+    const financeId = request.params.financeId;
+    if (typeof money !== "number" || typeof detail !== "string" || typeof financeId !== "number") {
+      API.failure(res, i18n.t("invalidParameter")); return;
+    }
 
     await financeModule.update({
-      money: request.params.money,
-      detail: request.params.detail,
+      money,
+      detail,
     }, {
       where: {
-        financeId: request.params.financeId,
+        financeId,
       },
     }).then(() => {
       API.success(res), i18n.t("financeUpdateSuccess");

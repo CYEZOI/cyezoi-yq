@@ -11,10 +11,10 @@ import { pipeInstance } from "@/pipe";
 import Link from "next/link";
 
 export default function App({ Component, pageProps }: AppProps) {
-  const [language, setLanguage] = useState("en");
-  const [studentName, setStudentName] = useState("");
+  const [language, setLanguage] = useState<string>("en");
+  const [studentName, setStudentName] = useState<string>("");
   const [alertList, setAlertList] = useState<{ message: string, variant: string }[]>([]);
-  const [mode, setMode] = useState("light");
+  const [mode, setMode] = useState<string>("light");
   i18n.changeLanguage(language);
   const { t } = i18n;
   const handleMode = (mode: string) => {
@@ -29,9 +29,9 @@ export default function App({ Component, pageProps }: AppProps) {
   }
 
   useEffect(() => {
-    typeof localStorage !== undefined && handleMode(localStorage.getItem("mode") || "light");
-    typeof document !== undefined && handleLanguage(localStorage.getItem("language") || "en");
-    typeof localStorage !== undefined && setStudentName(localStorage.getItem("studentName") || "");
+    typeof localStorage !== "undefined" && handleMode(localStorage.getItem("mode") || "light");
+    typeof document !== "undefined" && handleLanguage(localStorage.getItem("language") || "en");
+    typeof localStorage !== "undefined" && setStudentName(localStorage.getItem("studentName") || "");
     pipeInstance.listen("newAlert", (data: { message: string, variant: string }) => {
       setAlertList((prevAlertList) => {
         const newAlertList = [...prevAlertList.filter(alert => alert.message !== data.message), data];

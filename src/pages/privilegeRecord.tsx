@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import i18n from "@/i18n";
 import Head from "next/head";
-import { Card, Pagination } from "react-bootstrap";
+import { Badge, Card, Pagination } from "react-bootstrap";
 import useSWR from "swr";
 import { API } from "@/api";
 
 export default function privilegeRecord() {
   const { t } = i18n;
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState<number>(1);
 
   const { data: privilegeRecordData } = useSWR("privilegeRecord?page=" + page, API.SWRGet);
   const privilegeRecordDataProvider = privilegeRecordData as {
@@ -48,7 +48,7 @@ export default function privilegeRecord() {
 
   const { data: roleData } = useSWR(() => {
     const role = privilegeRecordDataProvider ? privilegeRecordDataProvider.privilegeRecord.filter(record => record.type == "role").map(record => record.value).join(",") : null;
-    return role ? "role?roleId=" + role : null;
+    return role ? "role?roleIdList=" + role : null;
   }, API.SWRGet);
   const roleDataProvider = roleData as {
     role: Array<{
@@ -70,7 +70,7 @@ export default function privilegeRecord() {
         <Pagination.Next onClick={() => setPage(page + 1)} disabled={privilegeRecordDataProvider == null || page == Math.ceil(privilegeRecordDataProvider.privilegeRecordSize / 10)} />
         <Pagination.Last onClick={() => setPage(Math.ceil(privilegeRecordDataProvider.privilegeRecordSize / 10))} />
       </Pagination>
-      {privilegeRecordDataProvider && privilegeRecordDataProvider.privilegeRecord.map((record: any) => (
+      {privilegeRecordDataProvider && privilegeRecordDataProvider.privilegeRecord.map((record) => (
         <Card key={record.id} className="mb-2" border={record.io ? "info" : "secondary"}>
           <Card.Body>
             <Card.Title>{studentDataProvider ? studentDataProvider.student.find(student => student.studentId == record.student)?.studentName : t("student") + record.student}</Card.Title>
@@ -78,11 +78,20 @@ export default function privilegeRecord() {
             <Card.Text>
               {record.io ? t("gain") : t("lose")}
               {t(record.type)}{t("colon")}
-              {record.type == "group"
-                ? groupDataProvider ? groupDataProvider.group.find(group => group.groupId == record.value)?.groupName : t("group") + record.value
-                : roleDataProvider ? roleDataProvider.role.find(role => role.roleId == record.value)?.roleName : t("role") + record.value}
+              {(() => {
+                if (record.type == "group")
+                  return <Badge key={record.value} role="button" onClick={() => { window.location.href = "/group?groupId=" + record.value; }}>
+                    {groupDataProvider ? groupDataProvider.group.find(group => group.groupId == record.value)?.groupName : t("group") + record.value}
+                  </Badge>;
+                if (record.type == "role")
+                  return <Badge key={record.value} role="button" onClick={() => { window.location.href = "/role?roleIdList=" + record.value; }}>
+                    {roleDataProvider ? roleDataProvider.role.find(role => role.roleId == record.value)?.roleName : t("role") + record.value}
+                  </Badge>;
+                return <>{record.type} {record.value}</>;
+              })()}
               {t("comma")}
-              {t("reason")}{t("colon")}{record.reason}</Card.Text>
+              {t("reason")}{t("colon")}{record.reason}
+            </Card.Text>
           </Card.Body>
         </Card>
       ))}

@@ -3,6 +3,8 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { userModule } from "@/database";
 import i18n from "@/i18n";
 import { token } from "@/token";
+import { permission, permission as permission_ } from "@/permission";
+import { utilities } from "@/utilities";
 
 export default async function handler(
   req: NextApiRequest,
@@ -10,22 +12,26 @@ export default async function handler(
 ) {
   if (req.method == "GET") {
     i18n.changeLanguage(req.query.lang as string || "en");
-    if (await token.checkToken(req.query.token as string) == null) {
+    const userId: number = await token.checkToken(req.query.token as string) || -1;
+    if (userId == -1) {
       API.failure(res, i18n.t("unauthorized"));
       return;
     }
+    const userIdList = req.query.userIdList;
 
-    var userIdList: Array<number> = [];
-    if (req.query.userIdList && typeof req.query.userIdList == "string") {
-      for (const userId of req.query.userIdList.split(",")) {
-        const userIdNumber = parseInt(userId);
-        if (isNaN(userIdNumber) || userIdNumber < 0 || userIdNumber == Infinity) {
-          API.failure(res, "Invalid user");
-          return;
+    var userId_query: Array<number> = [];
+    if (typeof userIdList === "string") {
+      for (const _ of userIdList.split(",")) {
+        if (!utilities.isValidNumber(_)) {
+          API.failure(res, i18n.t("invalidParameter")); return;
         }
-        userIdList.push(userIdNumber);
+        userId_query.push(parseInt(_));
       }
     }
+    if (userId_query.length == 0 && (await permission.getPermission(userId)).checkPermission(permission.PERMISSION_LIST_USER) == false) {
+      API.failure(res, i18n.t("permissionDenied")); return;
+    }
+
     var userData: Array<{
       userId: number,
       username: string,
@@ -34,19 +40,19 @@ export default async function handler(
       lastOnline: Date,
     }> = [];
     await userModule.findAll({
-      ...userIdList.length > 0 && {
+      ...userId_query.length > 0 && {
         where: {
-          userId: userIdList,
+          userId: userId_query,
         },
       },
     }).then(records => {
-      for (const record of records) {
+      for (const _ of records) {
         userData.push({
-          userId: record.getDataValue("userId"),
-          username: record.getDataValue("username"),
-          studentId: record.getDataValue("studentId"),
-          permission: record.getDataValue("permission"),
-          lastOnline: record.getDataValue("lastOnline"),
+          userId: _.getDataValue("userId"),
+          username: _.getDataValue("username"),
+          studentId: _.getDataValue("studentId"),
+          permission: _.getDataValue("permission"),
+          lastOnline: _.getDataValue("lastOnline"),
         });
       }
     }).catch((error: Error) => {
@@ -58,27 +64,72 @@ export default async function handler(
   else if (req.method == "POST") {
     const request: APIRequest = req.body;
     i18n.changeLanguage(request.lang || "en");
-    if (await token.checkToken(request.token as string) == null) {
+    const userId: number = await token.checkToken(request.token as string) || -1;
+    if (userId == -1) {
+      API.failure(res, i18n.t("unauthorized")); return;
+    }
+    const username = request.params.username;
+    const password = request.params.password;
+    const studentId = request.params.studentId;
+    const permission = request.params.permission;
+    if (typeof username !== "string" || typeof password !== "string" || typeof studentId !== "number" || typeof permission !== "number") {
+      API.failure(res, i18n.t("invalidParameter")); return;
+    }
+    if ((await permission_.getPermission(userId)).checkPermission(permission_.PERMISSION_CREATE_USER) == false) {
+      API.failure(res, i18n.t("permissionDenied")); return;
+    }
+
+    if ((await userModule.count({
+      where: {
+        username,
+      }
+    }))) {
+      API.failure(res, i18n.t("userExists"));
+    }
+
+    await userModule.create({
+      username,
+      password,
+      studentId,
+      permission,
+    }).then(() => {
+      API.success(res, i18n.t("userCreateSuccess"));
+    }).catch((error: Error) => {
+      console.error(error.name + "  " + error.message);
+      API.failure(res, i18n.t("databaseError"));
+    });
+  }
+  else if (req.method == "PUT") {
+    const request: APIRequest = req.body;
+    i18n.changeLanguage(request.lang || "en");
+    const userId: number = await token.checkToken(request.token as string) || -1;
+    if (userId == -1) {
       API.failure(res, i18n.t("unauthorized"));
       return;
     }
 
-    if (request.params.username && request.params.password && request.params.studentId && request.params.permission) {
-      await userModule.create({
-        username: request.params.username,
-        password: request.params.password,
-        studentId: request.params.studentId,
-        permission: request.params.permission,
-      }).then(() => {
-        API.success(res, i18n.t("userCreateSuccess"));
-      }).catch((error: Error) => {
-        console.error(error.name + "  " + error.message);
-        API.failure(res, i18n.t("databaseError"));
-      });
+    const username = request.params.username;
+    const password = request.params.password;
+    if (typeof password !== "string") {
+      API.failure(res, i18n.t("invalidParameter")); return;
     }
-    else {
-      API.failure(res, i18n.t("invalidParameter"));
+    if ((await permission_.getPermission(userId)).checkPermission(permission_.PERMISSION_UPDATE_OTHER_PASSWORD) == false) {
+      API.failure(res, i18n.t("permissionDenied"));
+      return;
     }
+
+    await userModule.update({
+      password,
+    }, {
+      where: {
+        username,
+      },
+    }).then(() => {
+      API.success(res, i18n.t("userUpdateSuccess"));
+    }).catch((error: Error) => {
+      console.error(error);
+      API.failure(res, i18n.t("databaseError"));
+    });
   }
   else if (req.method == "DELETE") {
     i18n.changeLanguage(req.query.lang as string || "en");
@@ -86,22 +137,21 @@ export default async function handler(
       API.failure(res, i18n.t("unauthorized"));
       return;
     }
+    const userId = req.query.userId;
+    if (typeof userId !== "string" || !utilities.isValidNumber(userId)) {
+      API.failure(res, i18n.t("invalidParameter")); return;
+    }
 
-    if (req.query.userId && typeof req.query.userId == "string") {
-      await userModule.destroy({
-        where: {
-          userId: parseInt(req.query.userId),
-        },
-      }).then(() => {
-        API.success(res, i18n.t("userDeleteSuccess"));
-      }).catch((error: Error) => {
-        console.error(error.name + "  " + error.message);
-        API.failure(res, i18n.t("databaseError"));
-      });
-    }
-    else {
-      API.failure(res, i18n.t("invalidParameter"));
-    }
+    await userModule.destroy({
+      where: {
+        userId,
+      },
+    }).then(() => {
+      API.success(res, i18n.t("userDeleteSuccess"));
+    }).catch((error: Error) => {
+      console.error(error.name + "  " + error.message);
+      API.failure(res, i18n.t("databaseError"));
+    });
   }
   else {
     API.failure(res, i18n.t("invalidMethod"));
