@@ -2,7 +2,7 @@ import type { AppProps } from "next/app";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import NavDropdown from "react-bootstrap/NavDropdown";
-import { Book, BoxArrowRight, BoxArrowUpRight, CashCoin, HouseDoor, Moon, People, Person, PersonBadge, Sun, Toggles, Translate } from "react-bootstrap-icons";
+import { Book, BoxArrowRight, BoxArrowUpRight, CashCoin, HouseDoor, Moon, PencilSquare, People, Person, PersonBadge, PersonVcard, PersonWorkspace, Sun, Toggles, Translate } from "react-bootstrap-icons";
 import i18n from "@/i18n";
 import "bootstrap/dist/css/bootstrap.css";
 import { useEffect, useState } from "react";
@@ -12,6 +12,7 @@ import Link from "next/link";
 
 export default function App({ Component, pageProps }: AppProps) {
   const [language, setLanguage] = useState<string>("en");
+  const [username, setUsername] = useState<string>("");
   const [studentName, setStudentName] = useState<string>("");
   const [alertList, setAlertList] = useState<{ message: string, variant: string }[]>([]);
   const [mode, setMode] = useState<string>("light");
@@ -31,6 +32,7 @@ export default function App({ Component, pageProps }: AppProps) {
   useEffect(() => {
     typeof localStorage !== "undefined" && handleMode(localStorage.getItem("mode") || "light");
     typeof document !== "undefined" && handleLanguage(localStorage.getItem("language") || "en");
+    typeof localStorage !== "undefined" && setUsername(localStorage.getItem("username") || "");
     typeof localStorage !== "undefined" && setStudentName(localStorage.getItem("studentName") || "");
     pipeInstance.listen("newAlert", (data: { message: string, variant: string }) => {
       setAlertList((prevAlertList) => {
@@ -44,7 +46,7 @@ export default function App({ Component, pageProps }: AppProps) {
   }, []);
 
   return <>
-    <Navbar expand="lg" className="bg-body-tertiary mb-3">
+    <Navbar expand="lg" className="bg-body-tertiary mb-3" >
       <Container>
         <Navbar.Brand>
           {/* <img src="/CYEZOI.png" width="30" height="30" className="d-inline-block align-top" /> */}
@@ -54,33 +56,41 @@ export default function App({ Component, pageProps }: AppProps) {
         <Navbar.Collapse>
           <Nav className="me-auto">
             <Nav.Link href="/"><HouseDoor className="me-1" />{t("home")}</Nav.Link>
-            <Nav.Link href="/student"><Person className="me-1" />{t("student")}</Nav.Link>
-            <Nav.Link href="/privilegeRecord"><Book className="me-1" />{t("privilegeRecord")}</Nav.Link>
-            <Nav.Link href="/group"><People className="me-1" />{t("group")}</Nav.Link>
+            <NavDropdown title={<span><PersonWorkspace className="me-1" />{t("personal")}</span>} className="me-1">
+              <NavDropdown.Item href="/student"><Person className="me-1" />{t("student")}</NavDropdown.Item>
+              <NavDropdown.Item href="/group"><People className="me-1" />{t("group")}</NavDropdown.Item>
+              <NavDropdown.Item href="/role"><PersonVcard className="me-1" />{t("role")}</NavDropdown.Item>
+              <NavDropdown.Item href="/user"><PersonBadge className="me-1" />{t("user")}</NavDropdown.Item>
+              <NavDropdown.Item href="/privilegeRecord"><Book className="me-1" />{t("privilegeRecord")}</NavDropdown.Item>
+            </NavDropdown>
             <Nav.Link href="/finance"><CashCoin className="me-1" />{t("finance")}</Nav.Link>
-            <Nav.Link href="/user"><PersonBadge className="me-1" />{t("user")}</Nav.Link>
-            <Nav.Link href="https://langningchen.sharepoint.com/:f:/g/ErK-j2zEQDRMjhUFSqFC2aIBQaNc5j6OprIRQsgwdmirDw?e=KRm4fx" target="_blank"><BoxArrowUpRight className="me-1" />{t("resource")}</Nav.Link>
+            <Nav.Link href="https://langningchen.sharepoint.com/:f:/g/ErK-j2zEQDRMjhUFSqFC2aIBXnlcLPhx-8-SwIZMJ9hMGg?e=fmeiyC" target="_blank"><BoxArrowUpRight className="me-1" />{t("resource")}</Nav.Link>
           </Nav>
-          <NavDropdown title={<span><Toggles className="me-1" />{t("mode")}</span>} className="me-4">
-            <NavDropdown.Item onClick={() => { handleMode("light"); }}><Sun className="me-1" />{t("light")}</NavDropdown.Item>
-            <NavDropdown.Item onClick={() => { handleMode("dark"); }}><Moon className="me-1" />{t("dark")}</NavDropdown.Item>
-          </NavDropdown>
-          <NavDropdown title={<span><Translate className="me-1" />{t("language")}</span>} className="me-4">
-            <NavDropdown.Item onClick={() => { handleLanguage("en"); }}>English</NavDropdown.Item>
-            <NavDropdown.Item onClick={() => { handleLanguage("zh"); }}>中文</NavDropdown.Item>
-          </NavDropdown>
-          {
-            studentName == "" ?
-              <Nav.Link href="/login">{t("login")}</Nav.Link> :
-              <NavDropdown title={studentName}>
-                <NavDropdown.Item onClick={() => {
-                  localStorage.removeItem("userId");
-                  localStorage.removeItem("token");
-                  localStorage.removeItem("studentId");
-                  localStorage.removeItem("studentName"); setStudentName("");
-                }}><BoxArrowRight className="me-1" />{t("logout")}</NavDropdown.Item>
-              </NavDropdown>
-          }
+          <Nav >
+            <NavDropdown title={<span><Toggles className="me-1" />{t("mode")}</span>} className="me-1">
+              <NavDropdown.Item onClick={() => { handleMode("light"); }}><Sun className="me-1" />{t("light")}</NavDropdown.Item>
+              <NavDropdown.Item onClick={() => { handleMode("dark"); }}><Moon className="me-1" />{t("dark")}</NavDropdown.Item>
+            </NavDropdown>
+            <NavDropdown title={<span><Translate className="me-1" />{t("language")}</span>} className="me-1">
+              <NavDropdown.Item onClick={() => { handleLanguage("en"); }}>English</NavDropdown.Item>
+              <NavDropdown.Item onClick={() => { handleLanguage("zh"); }}>中文</NavDropdown.Item>
+            </NavDropdown>
+            {
+              studentName == "" ?
+                <Nav.Link href="/login">{t("login")}</Nav.Link> :
+                <>
+                  <NavDropdown title={studentName}>
+                    <NavDropdown.Item href={"/password?username=" + username}><PencilSquare className="me-1" />{t("changePassword")}</NavDropdown.Item>
+                    <NavDropdown.Item onClick={() => {
+                      localStorage.removeItem("userId");
+                      localStorage.removeItem("token");
+                      localStorage.removeItem("studentId");
+                      localStorage.removeItem("studentName"); setStudentName("");
+                    }}><BoxArrowRight className="me-1" />{t("logout")}</NavDropdown.Item>
+                  </NavDropdown>
+                </>
+            }
+          </Nav>
         </Navbar.Collapse>
       </Container>
     </Navbar >

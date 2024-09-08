@@ -103,33 +103,68 @@ export default async function handler(
     const request: APIRequest = req.body;
     i18n.changeLanguage(request.lang || "en");
     const userId: number = await token.checkToken(request.token as string) || -1;
-    if (userId == -1) {
-      API.failure(res, i18n.t("unauthorized"));
-      return;
+    var username: string = "";
+    if (userId !== -1) {
+      await userModule.findOne({
+        where: {
+          userId,
+        },
+      }).then(user => {
+        if (!user) {
+          API.failure(res, i18n.t("userNotFound"));
+          return;
+        }
+        username = user.getDataValue("username");
+      }).catch(() => {
+        username = "";
+      });
     }
 
-    const username = request.params.username;
+    const username_query = request.params.username;
     const password = request.params.password;
-    if (typeof password !== "string") {
-      API.failure(res, i18n.t("invalidParameter")); return;
-    }
-    if ((await permission_.getPermission(userId)).checkPermission(permission_.PERMISSION_UPDATE_OTHER_PASSWORD) == false) {
-      API.failure(res, i18n.t("permissionDenied"));
-      return;
-    }
+    const userId_query = request.params.userId;
+    const permission = request.params.permission;
+    if (typeof username_query === "string" && typeof password === "string") {
+      if (username_query !== username && (await permission_.getPermission(userId)).checkPermission(permission_.PERMISSION_UPDATE_OTHER_PASSWORD) == false) {
+        API.failure(res, i18n.t("permissionDenied"));
+        return;
+      }
 
-    await userModule.update({
-      password,
-    }, {
-      where: {
-        username,
-      },
-    }).then(() => {
-      API.success(res, i18n.t("userUpdateSuccess"));
-    }).catch((error: Error) => {
-      console.error(error);
-      API.failure(res, i18n.t("databaseError"));
-    });
+      await userModule.update({
+        password,
+      }, {
+        where: {
+          username: username_query,
+        },
+      }).then(() => {
+        API.success(res, i18n.t("userUpdateSuccess"));
+      }).catch((error: Error) => {
+        console.error(error);
+        API.failure(res, i18n.t("databaseError"));
+      });
+    }
+    else if (typeof userId_query === "number" && typeof permission === "number") {
+      // if ((await permission_.getPermission(userId)).checkPermission(permission_.PERMISSION_UPDATE_PRIVILEGE) == false) {
+      //   API.failure(res, i18n.t("permissionDenied"));
+      //   return;
+      // }
+
+      await userModule.update({
+        permission,
+      }, {
+        where: {
+          userId: userId_query,
+        },
+      }).then(() => {
+        API.success(res, i18n.t("userUpdateSuccess"));
+      }).catch((error: Error) => {
+        console.error(error);
+        API.failure(res, i18n.t("databaseError"));
+      });
+    }
+    else {
+      API.failure(res, i18n.t("invalidParameter"));
+    }
   }
   else if (req.method == "DELETE") {
     i18n.changeLanguage(req.query.lang as string || "en");

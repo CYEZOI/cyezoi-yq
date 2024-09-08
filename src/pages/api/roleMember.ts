@@ -16,32 +16,45 @@ export default async function handler(
       return;
     }
     const studentIdList = req.query.studentIdList;
-    if (typeof studentIdList !== "string") {
-      API.failure(res, i18n.t("invalidParameter")); return;
-    }
+    const roleIdList = req.query.roleIdList;
 
     var student: Array<number> = [];
-    for (const _ of studentIdList.split(",")) {
-      if (!utilities.isValidNumber(_)) {
-        API.failure(res, i18n.t("invalidParameter")); return;
+    var role: Array<number> = [];
+    if (typeof studentIdList === "string") {
+      for (const _ of studentIdList.split(",")) {
+        if (!utilities.isValidNumber(_)) {
+          API.failure(res, i18n.t("invalidParameter")); return;
+        }
+        student.push(parseInt(_));
       }
-      student.push(parseInt(_));
     }
+    if (typeof roleIdList === "string") {
+      for (const _ of roleIdList.split(",")) {
+        if (!utilities.isValidNumber(_)) {
+          API.failure(res, i18n.t("invalidParameter")); return;
+        }
+        role.push(parseInt(_));
+      }
+    }
+
     var studentData: Array<{
       studentId: number,
-      role: Array<number>,
+      role: Array<{
+        roleId: number,
+      }>,
     }> = [];
+    var whereObject: any = {};
+    if (student.length > 0) whereObject.student = student;
+    if (role.length > 0) whereObject.role = role;
     await roleMemberModule.findAll({
-      ...student.length > 0 && {
-        where: {
-          student,
-        },
-      },
+      where: whereObject,
     }).then(records => {
       for (const _ of records) {
         studentData.push({
           studentId: _.getDataValue("student"),
-          role: [_.getDataValue("role")],
+          role: [{
+            roleId: _.getDataValue("role"),
+          }],
         });
       }
     }).catch((error: Error) => {
@@ -49,6 +62,36 @@ export default async function handler(
       API.failure(res, i18n.t("databaseError"));
     });
     API.success(res, i18n.t("roleMemberGetSuccess"), { student: studentData });
+
+    // var student: Array<number> = [];
+    // for (const _ of studentIdList.split(",")) {
+    //   if (!utilities.isValidNumber(_)) {
+    //     API.failure(res, i18n.t("invalidParameter")); return;
+    //   }
+    //   student.push(parseInt(_));
+    // }
+    // var studentData: Array<{
+    //   studentId: number,
+    //   role: Array<number>,
+    // }> = [];
+    // await roleMemberModule.findAll({
+    //   ...student.length > 0 && {
+    //     where: {
+    //       student,
+    //     },
+    //   },
+    // }).then(records => {
+    //   for (const _ of records) {
+    //     studentData.push({
+    //       studentId: _.getDataValue("student"),
+    //       role: [_.getDataValue("role")],
+    //     });
+    //   }
+    // }).catch((error: Error) => {
+    //   console.error(error.name + "  " + error.message);
+    //   API.failure(res, i18n.t("databaseError"));
+    // });
+    // API.success(res, i18n.t("roleMemberGetSuccess"), { student: studentData });
   }
   else if (req.method == "POST") {
     const request: APIRequest = req.body;

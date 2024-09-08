@@ -2,6 +2,7 @@ import { API, APIResponse } from "@/api";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { roleModule } from "@/database";
 import i18n from "@/i18n";
+import { token } from "@/token";
 import { utilities } from "@/utilities";
 
 export default async function handler(
@@ -10,17 +11,20 @@ export default async function handler(
 ) {
   if (req.method == "GET") {
     i18n.changeLanguage(req.query.lang as string || "en");
-    const roleIdList = req.query.roleIdList;
-    if (typeof roleIdList !== "string") {
-      API.failure(res, i18n.t("invalidParameter")); return;
+    if (await token.checkToken(req.query.token as string) == null) {
+      API.failure(res, i18n.t("unauthorized"));
+      return;
     }
+    const roleIdList = req.query.roleIdList;
 
     var roleId: Array<number> = [];
-    for (const _ of roleIdList.split(",")) {
-      if (!utilities.isValidNumber(_)) {
-        API.failure(res, i18n.t("invalidParameter")); return;
+    if (typeof roleIdList === "string") {
+      for (const _ of roleIdList.split(",")) {
+        if (!utilities.isValidNumber(_)) {
+          API.failure(res, i18n.t("invalidParameter")); return;
+        }
+        roleId.push(parseInt(_));
       }
-      roleId.push(parseInt(_));
     }
     var roleData: Array<{
       roleId: number,
@@ -33,10 +37,10 @@ export default async function handler(
         },
       },
     }).then(records => {
-      for (const record of records) {
+      for (const _ of records) {
         roleData.push({
-          roleId: record.getDataValue("roleId"),
-          roleName: record.getDataValue("roleName"),
+          roleId: _.getDataValue("roleId"),
+          roleName: _.getDataValue("roleName"),
         });
       }
     }).catch((error: Error) => {

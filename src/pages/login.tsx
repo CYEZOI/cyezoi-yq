@@ -37,6 +37,7 @@ export default function login() {
             success: (response) => {
               const userId = response.userId;
               const token = response.token;
+              localStorage.setItem("username", values.username);
               localStorage.setItem("userId", userId);
               localStorage.setItem("token", token);
               API.Get("user", { userIdList: userId }, {

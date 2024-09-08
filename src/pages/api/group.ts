@@ -15,15 +15,15 @@ export default async function handler(
       API.failure(res, i18n.t("unauthorized"));
       return;
     }
-    const groupId = req.query.groupId;
+    const groupIdList = req.query.groupIdList;
 
-    var groupIdList: Array<number> = [];
-    if (typeof groupId === "string") {
-      for (const _ of groupId.split(",")) {
+    var groupId: Array<number> = [];
+    if (typeof groupIdList === "string") {
+      for (const _ of groupIdList.split(",")) {
         if (!utilities.isValidNumber(_)) {
           API.failure(res, i18n.t("invalidParameter")); return;
         }
-        groupIdList.push(parseInt(_));
+        groupId.push(parseInt(_));
       }
     }
     var groupData: Array<{
@@ -31,9 +31,9 @@ export default async function handler(
       groupName: string,
     }> = [];
     await groupModule.findAll({
-      ...groupIdList.length > 0 && {
+      ...groupId.length > 0 && {
         where: {
-          groupId: groupIdList,
+          groupId: groupId,
         },
       },
     }).then(records => {

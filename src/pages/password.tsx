@@ -20,14 +20,14 @@ export default function password() {
   return (
     <>
       <Head>
-        <title>{t("password") + " - " + t("brand")}</title>
+        <title>{t("changePassword") + " - " + t("brand")}</title>
       </Head>
-      <h3>{t("password")}</h3>
+      <h3>{t("changePassword")}</h3>
       <Formik
         validationSchema={yup.object().shape({
           username: yup.string().typeError(t("requireString")).required(t("required")),
           password: yup.string().typeError(t("requireString")).required(t("required")).min(8, t("minLen8")).max(64, t("maxLen64")).matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{}|;':",.<>\/?]).{8,64}$/, t("requireStrongPassword")),
-          confirmPassword: yup.string().typeError(t("requireString")).required(t("required"))
+          confirmPassword: yup.string().typeError(t("requireString")).required(t("required")).oneOf([yup.ref("password")], t("passwordNotMatch")),
         })}
         onSubmit={(params: object) => {
           const values = params as { username: string, password: string };

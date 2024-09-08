@@ -37,7 +37,7 @@ export default function privilegeRecord() {
 
   const { data: groupData } = useSWR(() => {
     const group = privilegeRecordDataProvider ? privilegeRecordDataProvider.privilegeRecord.filter(record => record.type == "group").map(record => record.value).join(",") : null;
-    return group ? "group?groupId=" + group : null;
+    return group ? "group?groupIdList=" + group : null;
   }, API.SWRGet);
   const groupDataProvider = groupData as {
     group: Array<{
@@ -80,7 +80,7 @@ export default function privilegeRecord() {
               {t(record.type)}{t("colon")}
               {(() => {
                 if (record.type == "group")
-                  return <Badge key={record.value} role="button" onClick={() => { window.location.href = "/group?groupId=" + record.value; }}>
+                  return <Badge key={record.value} role="button" onClick={() => { window.location.href = "/group?groupIdList=" + record.value; }}>
                     {groupDataProvider ? groupDataProvider.group.find(group => group.groupId == record.value)?.groupName : t("group") + record.value}
                   </Badge>;
                 if (record.type == "role")

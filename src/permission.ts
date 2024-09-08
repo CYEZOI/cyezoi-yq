@@ -6,6 +6,7 @@ export class permission {
     public static PERMISSION_CREATE_USER = 2;
     public static PERMISSION_LIST_USER = 3;
     public static PERMISSION_UPDATE_OTHER_PASSWORD = 4;
+    public static PERMISSION_UPDATE_PRIVILEGE = 5;
 
     private permissionNumber: number;
     constructor(permissionNumber: number) { this.permissionNumber = permissionNumber; }

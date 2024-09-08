@@ -39,7 +39,7 @@ export default function student() {
 
   const { data: groupData } = useSWR(() => {
     const group = groupMemberDataProvider ? groupMemberDataProvider.student.map(groupMember => groupMember.group.map(group => group.groupId)).join(",") : null;
-    return group ? "group?groupId=" + group : null;
+    return group ? "group?groupIdList=" + group : null;
   }, API.SWRGet);
   const groupDataProvider = groupData as {
     group: Array<{
@@ -92,7 +92,7 @@ export default function student() {
                 {student["studentName"]}
                 {groupMemberDataProvider ? groupMemberDataProvider.student.filter(groupMember => groupMember.studentId == student["studentId"]).map(groupMember => (
                   groupMember.group.map(group => (
-                    <Badge className="ms-2" key={group.groupId} bg={group.leader ? "primary" : "secondary"} role="button" onClick={() => { window.location.href = "/group?groupId=" + group.groupId; }}>
+                    <Badge className="ms-2" key={group.groupId} bg={group.leader ? "primary" : "secondary"} role="button" onClick={() => { window.location.href = "/group?groupIdList=" + group.groupId; }}>
                       {groupDataProvider ? groupDataProvider.group.filter(groupData => groupData.groupId == group.groupId).map(groupData => groupData.groupName) : t("group") + " " + group.groupId}
                     </Badge>
                   ))
