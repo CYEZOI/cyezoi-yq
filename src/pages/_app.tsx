@@ -12,7 +12,7 @@ import Link from "next/link";
 
 export default function App({ Component, pageProps }: AppProps) {
   const [language, setLanguage] = useState<string>("en");
-  const [username, setUsername] = useState<string>("");
+  const [userId, setUserId] = useState<string>("");
   const [studentName, setStudentName] = useState<string>("");
   const [alertList, setAlertList] = useState<{ message: string, variant: string }[]>([]);
   const [mode, setMode] = useState<string>("light");
@@ -32,7 +32,7 @@ export default function App({ Component, pageProps }: AppProps) {
   useEffect(() => {
     typeof localStorage !== "undefined" && handleMode(localStorage.getItem("mode") || "light");
     typeof document !== "undefined" && handleLanguage(localStorage.getItem("language") || "en");
-    typeof localStorage !== "undefined" && setUsername(localStorage.getItem("username") || "");
+    typeof localStorage !== "undefined" && setUserId(localStorage.getItem("userId") || "");
     typeof localStorage !== "undefined" && setStudentName(localStorage.getItem("studentName") || "");
     pipeInstance.listen("newAlert", (data: { message: string, variant: string }) => {
       setAlertList((prevAlertList) => {
@@ -80,7 +80,7 @@ export default function App({ Component, pageProps }: AppProps) {
                 <Nav.Link href="/login">{t("login")}</Nav.Link> :
                 <>
                   <NavDropdown title={studentName}>
-                    <NavDropdown.Item href={"/password?username=" + username}><PencilSquare className="me-1" />{t("changePassword")}</NavDropdown.Item>
+                    <NavDropdown.Item href={"/userInfo?userId=" + userId}><PencilSquare className="me-1" />{t("changeInfo")}</NavDropdown.Item>
                     <NavDropdown.Item onClick={() => {
                       localStorage.removeItem("userId");
                       localStorage.removeItem("token");

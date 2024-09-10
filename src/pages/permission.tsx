@@ -12,6 +12,8 @@ const permissionName = [
     "listUser",
     "updateOtherPassword",
     "updatePermission",
+    "updateOtherInfo",
+    "updateStudentName",
 ];
 
 export default function permission() {

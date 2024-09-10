@@ -24,20 +24,19 @@ export default function privilegeRecord() {
   };
 
   const { data: studentData } = useSWR(() => {
-    const student = privilegeRecordDataProvider ? privilegeRecordDataProvider.privilegeRecord.map(record => record.student).join(",") : null;
-    return student ? "student?student=" + student : null;
+    if (!privilegeRecordDataProvider) return null;
+    return "student?student=" + privilegeRecordDataProvider.privilegeRecord.map(record => record.student).join(",");
   }, API.SWRGet);
   const studentDataProvider = studentData as {
     student: Array<{
       studentId: number;
       studentName: string;
-      gender: boolean;
     }>;
   };
 
   const { data: groupData } = useSWR(() => {
-    const group = privilegeRecordDataProvider ? privilegeRecordDataProvider.privilegeRecord.filter(record => record.type == "group").map(record => record.value).join(",") : null;
-    return group ? "group?groupIdList=" + group : null;
+    if (!privilegeRecordDataProvider) return null;
+    return "group?groupIdList=" + privilegeRecordDataProvider.privilegeRecord.filter(record => record.type == "group").map(record => record.value);
   }, API.SWRGet);
   const groupDataProvider = groupData as {
     group: Array<{
@@ -47,8 +46,8 @@ export default function privilegeRecord() {
   };
 
   const { data: roleData } = useSWR(() => {
-    const role = privilegeRecordDataProvider ? privilegeRecordDataProvider.privilegeRecord.filter(record => record.type == "role").map(record => record.value).join(",") : null;
-    return role ? "role?roleIdList=" + role : null;
+    if (!privilegeRecordDataProvider) return null;
+    return "role?roleIdList=" + privilegeRecordDataProvider.privilegeRecord.filter(record => record.type == "role").map(record => record.value);
   }, API.SWRGet);
   const roleDataProvider = roleData as {
     role: Array<{

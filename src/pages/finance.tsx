@@ -54,10 +54,10 @@ export default function finance() {
           detail: yup.string().typeError(t("requireString")).required(t("required")).min(8, t("minLen8")).max(64, t("maxLen64")),
         })}
         onSubmit={(params: object) => {
-          const paramsProvider = params as { type: string, date: string, money: number, detail: string };
+          const paramsProvider = params as { type: string, date: string, money: string, detail: string };
           const values = {
             date: paramsProvider.date,
-            money: paramsProvider.money * (paramsProvider.type == "income" ? 1 : -1),
+            money: parseInt(paramsProvider.money) * (paramsProvider.type == "income" ? 1 : -1),
             detail: paramsProvider.detail,
           }
           API.Post("finance", { params: values }, {

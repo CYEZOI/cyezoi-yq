@@ -103,7 +103,6 @@ export default async function handler(
     const request: APIRequest = req.body;
     i18n.changeLanguage(request.lang || "en");
     const userId: number = await token.checkToken(request.token as string) || -1;
-    var username: string = "";
     if (userId !== -1) {
       await userModule.findOne({
         where: {
@@ -114,18 +113,22 @@ export default async function handler(
           API.failure(res, i18n.t("userNotFound"));
           return;
         }
-        username = user.getDataValue("username");
       }).catch(() => {
-        username = "";
+        API.failure(res, i18n.t("databaseError"));
+        return;
       });
     }
 
-    const username_query = request.params.username;
+    const userIdQuery = request.params.userId;
+    if (typeof userIdQuery !== "number") {
+      API.failure(res, i18n.t("invalidParameter")); return
+    }
+    const username = request.params.username;
     const password = request.params.password;
-    const userId_query = request.params.userId;
+    const studentId = request.params.studentId;
     const permission = request.params.permission;
-    if (typeof username_query === "string" && typeof password === "string") {
-      if (username_query !== username && (await permission_.getPermission(userId)).checkPermission(permission_.PERMISSION_UPDATE_OTHER_PASSWORD) == false) {
+    if (typeof password === "string") {
+      if (userId !== userIdQuery && (await permission_.getPermission(userId)).checkPermission(permission_.PERMISSION_UPDATE_OTHER_PASSWORD) == false) {
         API.failure(res, i18n.t("permissionDenied"));
         return;
       }
@@ -134,7 +137,7 @@ export default async function handler(
         password,
       }, {
         where: {
-          username: username_query,
+          userId: userIdQuery,
         },
       }).then(() => {
         API.success(res, i18n.t("userUpdateSuccess"));
@@ -143,7 +146,27 @@ export default async function handler(
         API.failure(res, i18n.t("databaseError"));
       });
     }
-    else if (typeof userId_query === "number" && typeof permission === "number") {
+    else if (typeof username === "string" && typeof studentId === "number") {
+      if (userId !== userIdQuery && (await permission_.getPermission(userId)).checkPermission(permission_.PERMISSION_UPDATE_OTHER_INFO) == false) {
+        API.failure(res, i18n.t("permissionDenied"));
+        return;
+      }
+
+      await userModule.update({
+        username,
+        studentId,
+      }, {
+        where: {
+          userId: userIdQuery,
+        },
+      }).then(() => {
+        API.success(res, i18n.t("userUpdateSuccess"));
+      }).catch((error: Error) => {
+        console.error(error);
+        API.failure(res, i18n.t("databaseError"));
+      });
+    }
+    else if (typeof permission === "number") {
       if ((await permission_.getPermission(userId)).checkPermission(permission_.PERMISSION_UPDATE_PRIVILEGE) == false) {
         API.failure(res, i18n.t("permissionDenied"));
         return;
@@ -153,7 +176,7 @@ export default async function handler(
         permission,
       }, {
         where: {
-          userId: userId_query,
+          userId: userIdQuery,
         },
       }).then(() => {
         API.success(res, i18n.t("userUpdateSuccess"));

@@ -4,8 +4,6 @@ import Head from "next/head";
 import useSWR from "swr";
 import { API } from "@/api";
 import { Button, Table } from "react-bootstrap";
-import Link from "next/link";
-import { QuestionCircle } from "react-bootstrap-icons";
 
 export default function role() {
   const { t } = i18n;

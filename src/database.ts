@@ -43,6 +43,10 @@ export const studentModule = sequelize.define(
             type: DataTypes.BOOLEAN,
             allowNull: false,
         },
+        psychologicalGender: {
+            type: DataTypes.STRING,
+            allowNull: true,
+        }
     },
 );
 

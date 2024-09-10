@@ -24,6 +24,7 @@ export default function student() {
   };
 
   const { data: groupMemberData } = useSWR(() => {
+    if (!studentDataProvider) return null;
     const student = studentDataProvider.student.map(student => student.studentId).join(",");
     return student ? "groupMember?student=" + student : null;
   }, API.SWRGet);
@@ -38,8 +39,9 @@ export default function student() {
   };
 
   const { data: groupData } = useSWR(() => {
-    const group = groupMemberDataProvider ? groupMemberDataProvider.student.map(groupMember => groupMember.group.map(group => group.groupId)).join(",") : null;
-    return group ? "group?groupIdList=" + group : null;
+    if (!groupMemberDataProvider) return null;
+    const group = groupMemberDataProvider.student.map(groupMember => groupMember.group.map(group => group.groupId)).join(",");
+    return "group?groupIdList=" + group;
   }, API.SWRGet);
   const groupDataProvider = groupData as {
     group: Array<{
@@ -49,19 +51,23 @@ export default function student() {
   };
 
   const { data: roleMemberData } = useSWR(() => {
+    if (!studentDataProvider) return null;
     const student = studentDataProvider.student.map(student => student.studentId).join(",");
-    return student ? "roleMember?studentIdList=" + student : null;
+    return "roleMember?studentIdList=" + student;
   }, API.SWRGet);
   const roleMemberDataProvider = roleMemberData as {
     student: Array<{
       studentId: number;
-      role: Array<number>;
+      role: Array<{
+        roleId: number;
+      }>;
     }>;
   };
 
   const { data: roleData } = useSWR(() => {
-    const role = roleMemberDataProvider ? roleMemberDataProvider.student.map(roleMember => roleMember.role).join(",") : null;
-    return role ? "role?roleIdList=" + role : null;
+    if (!roleMemberDataProvider) return null;
+    const role = roleMemberDataProvider.student.map(roleMember => roleMember.role.map(role => role.roleId)).join(",");
+    return "role?roleIdList=" + role;
   }, API.SWRGet);
   const roleDataProvider = roleData as {
     role: Array<{
@@ -80,8 +86,9 @@ export default function student() {
         <thead>
           <tr>
             <th className="col-2">{t("studentId")}</th>
-            <th className="col-8">{t("studentName")}</th>
+            <th className="col-6">{t("studentName")}</th>
             <th className="col-2">{t("gender")}</th>
+            <th className="col-2">{t("psychologicalGender")}</th>
           </tr>
         </thead>
         <tbody>
@@ -92,20 +99,21 @@ export default function student() {
                 {student["studentName"]}
                 {groupMemberDataProvider ? groupMemberDataProvider.student.filter(groupMember => groupMember.studentId == student["studentId"]).map(groupMember => (
                   groupMember.group.map(group => (
-                    <Badge className="ms-2" key={group.groupId} bg={group.leader ? "primary" : "secondary"} role="button" onClick={() => { window.location.href = "/group?groupIdList=" + group.groupId; }}>
+                    <Badge className="ms-2" key={group.groupId} bg={group.leader ? "primary" : "secondary"} role="button" onClick={() => { window.location.href = "/group?groupId=" + group.groupId; }}>
                       {groupDataProvider ? groupDataProvider.group.filter(groupData => groupData.groupId == group.groupId).map(groupData => groupData.groupName) : t("group") + " " + group.groupId}
                     </Badge>
                   ))
                 )) : <Placeholder className="ms-2" animation="wave"><Placeholder as={Col} xs={3} /></Placeholder>}
                 {roleMemberDataProvider ? roleMemberDataProvider.student.filter(roleMember => roleMember.studentId == student["studentId"]).map(roleMember => (
                   roleMember.role.map(role => (
-                    <Badge className="ms-2" key={role} bg="primary">
-                      {roleDataProvider ? roleDataProvider.role.filter(roleData => roleData.roleId == role).map(roleData => roleData.roleName) : t("role") + " " + role}
+                    <Badge className="ms-2" key={role.roleId} role="button" onClick={() => { window.location.href = "/role?roleId=" + role.roleId; }}>
+                      {roleDataProvider ? roleDataProvider.role.filter(roleData => roleData.roleId == role.roleId).map(roleData => roleData.roleName) : t("role") + " " + role.roleId}
                     </Badge>
                   ))
                 )) : <Placeholder className="ms-2" animation="wave"><Placeholder as={Col} xs={3} /></Placeholder>}
               </td>
               <td>{student["gender"] ? <><GenderMale className="me-1" />{t("male")}</> : <><GenderFemale className="me-1" />{t("female")}</>}</td>
+              <td>{student["psychologicalGender"]}</td>
             </tr>
           ))}
         </tbody>
