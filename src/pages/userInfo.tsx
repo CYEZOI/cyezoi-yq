@@ -52,8 +52,8 @@ export default function password() {
       <h3>{t("changeInfo")}</h3>
       <Nav variant="underline" defaultActiveKey={tab} onSelect={(tab) => { tab && setTab(tab) }} className="mb-2">
         <Nav.Item><Nav.Link eventKey="changeInfo">{t("changeInfo")}</Nav.Link></Nav.Item>
-        <Nav.Item><Nav.Link eventKey="changeStudentName">{t("changeStudentName")}</Nav.Link></Nav.Item>
-        <Nav.Item><Nav.Link eventKey="changeStudentGender">{t("changeStudentGender")}</Nav.Link></Nav.Item>
+        <Nav.Item><Nav.Link eventKey="changeStudentBasicInfo">{t("changeStudentBasicInfo")}</Nav.Link></Nav.Item>
+        <Nav.Item><Nav.Link eventKey="changeStudentInfo">{t("changeStudentInfo")}</Nav.Link></Nav.Item>
         <Nav.Item><Nav.Link eventKey="changePassword">{t("changePassword")}</Nav.Link></Nav.Item>
       </Nav>
       {(() => {
@@ -102,31 +102,34 @@ export default function password() {
               </Form>;
             }}
           </Formik>;
-        if (tab === "changeStudentName")
+        if (tab === "changeStudentBasicInfo")
           return <Formik
             validationSchema={yup.object().shape({
               studentId: yup.string().typeError(t("requireString")).required(t("required")).min(1, t("min1")).max(38, t("max38")),
               studentName: yup.string().typeError(t("requireString")).required(t("required")).min(1, t("min1")).max(38, t("max38")),
+              gender: yup.string().typeError(t("requireString")).required(t("required")),
             })}
             onSubmit={(params: object) => {
-              const values = params as { studentId: string, studentName: string };
+              const values = params as { studentId: string, gender: string, studentName: string };
               API.Put("student", {
                 params: {
                   studentId: parseInt(values.studentId),
                   studentName: values.studentName,
+                  gender: (values.gender == "male" ? true : false),
                 }
               }, {
                 showSuccess: true,
               });
             }} initialValues={{
               studentId: userDataProvider?.user[0]?.studentId || "",
-              studentName: studentDataProvider?.student[0]?.studentName || ""
+              studentName: studentDataProvider?.student[0]?.studentName || "",
+              gender: (studentDataProvider?.student[0]?.gender || "") ? "male" : "female",
             }} enableReinitialize={true}>
             {(props) => {
               const { handleSubmit, handleChange, handleBlur, values, touched, errors } = props;
-              const valuesProvider = values as { studentId: string, studentName: string };
-              const touchedProvider = touched as { studentId: boolean, studentName: boolean };
-              const errorsProvider = errors as { studentId: string, studentName: string };
+              const valuesProvider = values as { studentId: string, studentName: string, gender: string };
+              const touchedProvider = touched as { studentId: boolean, studentName: boolean, gender: boolean };
+              const errorsProvider = errors as { studentId: string, studentName: string, gender: string };
               return <Form noValidate onSubmit={handleSubmit}>
                 <FloatingLabel controlId="studentId" label={t("studentId")} className="mb-3">
                   <Form.Control placeholder={t("studentId")} name="studentId" value={valuesProvider.studentId} onBlur={handleBlur} onChange={handleChange} isInvalid={touchedProvider.studentId && errorsProvider.studentId != null} {...(userId === "" ? {} : { disabled: true })} />
@@ -136,23 +139,28 @@ export default function password() {
                   <Form.Control placeholder={t("studentName")} name="studentName" value={valuesProvider.studentName} onBlur={handleBlur} onChange={handleChange} isInvalid={touchedProvider.studentName && errorsProvider.studentName != null} />
                   <Form.Control.Feedback type="invalid">{errorsProvider.studentName}</Form.Control.Feedback>
                 </FloatingLabel>
+                <FloatingLabel controlId="gender" label={t("gender")} className="mb-3">
+                  <Form.Select name="gender" value={valuesProvider.gender} onBlur={handleBlur} onChange={handleChange} isInvalid={touchedProvider.gender && errorsProvider.gender != null}>
+                    <option value="male" {...(valuesProvider.gender ? { selected: true } : {})}>{t("male")}</option>
+                    <option value="female" {...(valuesProvider.gender ? {} : { selected: true })}>{t("female")}</option>
+                  </Form.Select>
+                  <Form.Control.Feedback type="invalid">{errorsProvider.gender}</Form.Control.Feedback>
+                </FloatingLabel>
                 <Button type="submit">{t("update")}</Button>
               </Form>;
             }}
           </Formik>;
-        if (tab === "changeStudentGender")
+        if (tab === "changeStudentInfo")
           return <Formik
             validationSchema={yup.object().shape({
               studentId: yup.string().typeError(t("requireString")).required(t("required")).min(1, t("min1")).max(38, t("max38")),
-              gender: yup.string().typeError(t("requireString")).required(t("required")),
               psychologicalGender: yup.string().typeError(t("requireString")),
             })}
             onSubmit={(params: object) => {
-              const values = params as { studentId: string, gender: string, psychologicalGender: string };
+              const values = params as { studentId: string, psychologicalGender: string };
               API.Put("student", {
                 params: {
                   studentId: parseInt(values.studentId),
-                  gender: (values.gender == "male" ? true : false),
                   psychologicalGender: values.psychologicalGender,
                 }
               }, {
@@ -160,25 +168,17 @@ export default function password() {
               });
             }} initialValues={{
               studentId: userDataProvider?.user[0]?.studentId || "",
-              gender: (studentDataProvider?.student[0]?.gender || "") ? "male" : "female",
               psychologicalGender: studentDataProvider?.student[0]?.psychologicalGender || ""
             }} enableReinitialize={true}>
             {(props) => {
               const { handleSubmit, handleChange, handleBlur, values, touched, errors } = props;
-              const valuesProvider = values as { studentId: string, gender: string, psychologicalGender: string };
-              const touchedProvider = touched as { studentId: boolean, gender: boolean, psychologicalGender: boolean };
-              const errorsProvider = errors as { studentId: string, gender: string, psychologicalGender: string };
+              const valuesProvider = values as { studentId: string, psychologicalGender: string };
+              const touchedProvider = touched as { studentId: boolean, psychologicalGender: boolean };
+              const errorsProvider = errors as { studentId: string, psychologicalGender: string };
               return <Form noValidate onSubmit={handleSubmit}>
                 <FloatingLabel controlId="studentId" label={t("studentId")} className="mb-3">
                   <Form.Control placeholder={t("studentId")} name="studentId" value={valuesProvider.studentId} onBlur={handleBlur} onChange={handleChange} isInvalid={touchedProvider.studentId && errorsProvider.studentId != null} {...(userId === "" ? {} : { disabled: true })} />
                   <Form.Control.Feedback type="invalid">{errorsProvider.studentId}</Form.Control.Feedback>
-                </FloatingLabel>
-                <FloatingLabel controlId="gender" label={t("gender")} className="mb-3">
-                  <Form.Select name="gender" value={valuesProvider.gender} onBlur={handleBlur} onChange={handleChange} isInvalid={touchedProvider.gender && errorsProvider.gender != null}>
-                    <option value="male" {...(valuesProvider.gender ? { selected: true } : {})}>{t("male")}</option>
-                    <option value="female" {...(valuesProvider.gender ? {} : { selected: true })}>{t("female")}</option>
-                  </Form.Select>
-                  <Form.Control.Feedback type="invalid">{errorsProvider.gender}</Form.Control.Feedback>
                 </FloatingLabel>
                 <FloatingLabel controlId="psychologicalGender" label={t("psychologicalGender")} className="mb-3">
                   <Form.Control placeholder={t("psychologicalGender")} name="psychologicalGender" value={valuesProvider.psychologicalGender} onBlur={handleBlur} onChange={handleChange} isInvalid={touchedProvider.psychologicalGender && errorsProvider.psychologicalGender != null} />

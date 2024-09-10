@@ -13,13 +13,13 @@ const permissionName = [
     "updateOtherPassword",
     "updatePermission",
     "updateOtherInfo",
-    "updateStudentName",
+    "changeStudentBasicInfo",
 ];
 
 export default function permission() {
     const { t } = t18n;
     const [userId, setUserId] = useState<number | null>(null);
-    const [permission, setPermission] = useState<number>(0);
+    const [permission, setPermission] = useState<number>(-1);
     const { data: permissionData } = useSWR(userId ? "user?userIdList=" + userId : null, API.SWRGet);
     const permissionDataProvider = permissionData as {
         user: Array<{
@@ -39,7 +39,7 @@ export default function permission() {
             studentName: string,
         }>;
     }
-    studentDataProvider && !permission && setPermission(permissionDataProvider.user[0].permission);
+    studentDataProvider && permission == -1 && setPermission(permissionDataProvider.user[0].permission);
 
     useEffect(() => {
         if (typeof location !== "undefined") {
@@ -47,6 +47,8 @@ export default function permission() {
             setUserId(parseInt(searchParams.get("userId") || ""));
         }
     });
+
+    console.log(permission);
 
     return (
         <>
@@ -70,6 +72,7 @@ export default function permission() {
                             <td>{(() => {
                                 const enabled: boolean = (permission & (1 << index)) != 0;
                                 return <Form.Check type="switch" label={t(enabled ? "enabled" : "disabled")} checked={enabled} onChange={() => {
+                                    console.log(permission, index, permission ^ (1 << index));
                                     setPermission(permission ^ (1 << index));
                                 }} />;
                             })()}</td>

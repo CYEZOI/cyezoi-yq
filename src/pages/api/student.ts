@@ -80,12 +80,11 @@ export default async function handler(
     const studentName = request.params.studentName;
     const gender = request.params.gender;
     const psychologicalGender = request.params.psychologicalGender;
-    if (typeof studentIdQuery === "number" && typeof gender === "boolean" && typeof psychologicalGender === "string") {
+    if (typeof studentIdQuery === "number" && typeof psychologicalGender === "string") {
       if (studentId !== studentIdQuery && (await (permission.getPermission(userId))).checkPermission(permission.PERMISSION_UPDATE_OTHER_INFO) == false) {
         API.failure(res, i18n.t("permissionDenied")); return;
       }
       await studentModule.update({
-        gender,
         psychologicalGender,
       }, {
         where: {
@@ -98,12 +97,13 @@ export default async function handler(
         API.failure(res, i18n.t("databaseError"));
       });
     }
-    else if (typeof studentIdQuery === "number" && typeof studentName === "string") {
-      if ((await (permission.getPermission(userId))).checkPermission(permission.PERMISSION_UPDATE_NAME) == false) {
+    else if (typeof studentIdQuery === "number" && typeof studentName === "string" && typeof gender === "boolean") {
+      if ((await (permission.getPermission(userId))).checkPermission(permission.PERMISSION_UPDATE_STUDENT_BASIC_INFO) == false) {
         API.failure(res, i18n.t("permissionDenied")); return;
       }
       await studentModule.update({
         studentName,
+        gender,
       }, {
         where: {
           studentId: studentIdQuery,
