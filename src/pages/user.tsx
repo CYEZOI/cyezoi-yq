@@ -6,7 +6,7 @@ import { API } from "@/api";
 import { Button, Col, Form, InputGroup, Placeholder, Row, Table } from "react-bootstrap";
 import { Formik } from "formik";
 import * as yup from "yup";
-import { Key, Question, Trash } from "react-bootstrap-icons";
+import { BoxArrowRight, Key, Question, Trash } from "react-bootstrap-icons";
 
 export default function user() {
   const { t } = i18n;
@@ -129,12 +129,19 @@ export default function user() {
                     <Button onClick={() => {
                       location.href = "/userInfo?userId=" + user.userId;
                     }} variant="outline-success" size="sm" className="me-2">
-                      <Question className="me-1" />{t("password")}
+                      <Question className="me-1" />{t("changeInfo")}
                     </Button>
                     <Button onClick={() => {
                       location.href = "/permission?userId=" + user.userId;
                     }} variant="outline-warning" size="sm" className="me-2">
                       <Key className="me-1" />{t("permission")}
+                    </Button>
+                    <Button onClick={() => {
+                      API.Delete("token", { userId: user.userId.toString() }, {
+                        showSuccess: true
+                      });
+                    }} variant="outline-danger" size="sm" className="me-2">
+                      <BoxArrowRight className="me-1" />{t("logout")}
                     </Button>
                     <Button onClick={() => {
                       API.Delete("user", { userId: user.userId.toString() }, {

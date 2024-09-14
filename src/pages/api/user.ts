@@ -13,9 +13,8 @@ export default async function handler(
   if (req.method == "GET") {
     i18n.changeLanguage(req.query.lang as string || "en");
     const userId: number = await token.checkToken(req.query.token as string) || -1;
-    if (userId == -1) {
-      API.failure(res, i18n.t("unauthorized"));
-      return;
+    if (userId === -1) {
+      API.failure(res, i18n.t("unauthorized")); return;
     }
     const userIdList = req.query.userIdList;
 
@@ -55,9 +54,6 @@ export default async function handler(
           lastOnline: _.getDataValue("lastOnline"),
         });
       }
-    }).catch((error: Error) => {
-      console.error(error.name + "  " + error.message);
-      API.failure(res, i18n.t("databaseError"));
     });
     API.success(res, i18n.t("userGetSuccess"), { user: userData });
   }
@@ -65,7 +61,7 @@ export default async function handler(
     const request: APIRequest = req.body;
     i18n.changeLanguage(request.lang || "en");
     const userId: number = await token.checkToken(request.token as string) || -1;
-    if (userId == -1) {
+    if (userId === -1) {
       API.failure(res, i18n.t("unauthorized")); return;
     }
     const username = request.params.username;
@@ -94,30 +90,12 @@ export default async function handler(
       permission,
     }).then(() => {
       API.success(res, i18n.t("userCreateSuccess"));
-    }).catch((error: Error) => {
-      console.error(error.name + "  " + error.message);
-      API.failure(res, i18n.t("databaseError"));
     });
   }
   else if (req.method == "PUT") {
     const request: APIRequest = req.body;
     i18n.changeLanguage(request.lang || "en");
     const userId: number = await token.checkToken(request.token as string) || -1;
-    if (userId !== -1) {
-      await userModule.findOne({
-        where: {
-          userId,
-        },
-      }).then(user => {
-        if (!user) {
-          API.failure(res, i18n.t("userNotFound"));
-          return;
-        }
-      }).catch(() => {
-        API.failure(res, i18n.t("databaseError"));
-        return;
-      });
-    }
 
     const userIdQuery = request.params.userId;
     if (typeof userIdQuery !== "number") {
@@ -141,9 +119,6 @@ export default async function handler(
         },
       }).then(() => {
         API.success(res, i18n.t("userUpdateSuccess"));
-      }).catch((error: Error) => {
-        console.error(error);
-        API.failure(res, i18n.t("databaseError"));
       });
     }
     else if (typeof username === "string" && typeof studentId === "number") {
@@ -161,9 +136,6 @@ export default async function handler(
         },
       }).then(() => {
         API.success(res, i18n.t("userUpdateSuccess"));
-      }).catch((error: Error) => {
-        console.error(error);
-        API.failure(res, i18n.t("databaseError"));
       });
     }
     else if (typeof permission === "number") {
@@ -180,9 +152,6 @@ export default async function handler(
         },
       }).then(() => {
         API.success(res, i18n.t("userUpdateSuccess"));
-      }).catch((error: Error) => {
-        console.error(error);
-        API.failure(res, i18n.t("databaseError"));
       });
     }
     else {
@@ -192,8 +161,7 @@ export default async function handler(
   else if (req.method == "DELETE") {
     i18n.changeLanguage(req.query.lang as string || "en");
     if (await token.checkToken(req.query.token as string) == null) {
-      API.failure(res, i18n.t("unauthorized"));
-      return;
+      API.failure(res, i18n.t("unauthorized")); return;
     }
     const userId = req.query.userId;
     if (typeof userId !== "string" || !utilities.isValidNumber(userId)) {
@@ -206,9 +174,6 @@ export default async function handler(
       },
     }).then(() => {
       API.success(res, i18n.t("userDeleteSuccess"));
-    }).catch((error: Error) => {
-      console.error(error.name + "  " + error.message);
-      API.failure(res, i18n.t("databaseError"));
     });
   }
   else {

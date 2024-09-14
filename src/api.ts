@@ -36,6 +36,7 @@ export class API {
                 "Accept": "application/json",
                 "Content-Type": "application/json",
             },
+            redirect: "manual",
         }).then((response) => response.json())
             .then((data) => {
                 const response: APIResponse = data;
@@ -66,6 +67,7 @@ export class API {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify(request),
+            redirect: "manual",
         }).then((response) => response.json())
             .then((data) => {
                 const response: APIResponse = data;

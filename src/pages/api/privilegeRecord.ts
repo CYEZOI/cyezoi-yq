@@ -12,8 +12,7 @@ export default async function handler(
   if (req.method == "GET") {
     i18n.changeLanguage(req.query.lang as string || "en");
     if (await token.checkToken(req.query.token as string) == null) {
-      API.failure(res, i18n.t("unauthorized"));
-      return;
+      API.failure(res, i18n.t("unauthorized")); return;
     }
     const page = req.query.page;
     if (typeof page !== "string") {
@@ -48,16 +47,10 @@ export default async function handler(
           reason: _.getDataValue("reason"),
         });
       }
-    }).catch((error: Error) => {
-      console.error(error);
-      API.failure(res, i18n.t("databaseError"));
     });
     var privilegeRecordSize: number = 0;
     await privilegeRecordModule.count().then(size => {
       privilegeRecordSize = size;
-    }).catch((error: Error) => {
-      console.error(error);
-      API.failure(res, i18n.t("databaseError"));
     });
     API.success(res, i18n.t("privilegeRecordGetSuccess"), { privilegeRecord, privilegeRecordSize });
   }

@@ -11,8 +11,7 @@ export default async function handler(
   if (req.method == "GET") {
     i18n.changeLanguage(req.query.lang as string || "en");
     if (await token.checkToken(req.query.token as string) == null) {
-      API.failure(res, i18n.t("unauthorized"));
-      return;
+      API.failure(res, i18n.t("unauthorized")); return;
     }
 
     const response: { records: Array<{ month: string, income: number, expenditure: number, balance: number }> } = { records: [] };
@@ -40,9 +39,6 @@ export default async function handler(
       }
       response.records.push({ month, income, expenditure, balance });
       API.success(res, i18n.t("financeStaticsGetSuccess"), response);
-    }).catch((error: Error) => {
-      console.error(error);
-      API.failure(res, i18n.t("databaseError"));
     });
   }
   else {

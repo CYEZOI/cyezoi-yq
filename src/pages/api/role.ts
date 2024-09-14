@@ -12,8 +12,7 @@ export default async function handler(
   if (req.method == "GET") {
     i18n.changeLanguage(req.query.lang as string || "en");
     if (await token.checkToken(req.query.token as string) == null) {
-      API.failure(res, i18n.t("unauthorized"));
-      return;
+      API.failure(res, i18n.t("unauthorized")); return;
     }
     const roleIdList = req.query.roleIdList;
 
@@ -43,9 +42,6 @@ export default async function handler(
           roleName: _.getDataValue("roleName"),
         });
       }
-    }).catch((error: Error) => {
-      console.error(error.name + "  " + error.message);
-      API.failure(res, i18n.t("databaseError"));
     });
     API.success(res, i18n.t("roleGetSuccess"), { role: roleData });
   } else {

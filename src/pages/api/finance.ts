@@ -13,24 +13,19 @@ export default async function handler(
   if (req.method == "GET") {
     i18n.changeLanguage(req.query.lang as string || "en");
     if (await token.checkToken(req.query.token as string) == null) {
-      API.failure(res, i18n.t("unauthorized"));
-      return;
+      API.failure(res, i18n.t("unauthorized")); return;
     }
 
     await financeModule.findAll().then((records) => {
       API.success(res, i18n.t("financeGetSuccess"), { records: records });
-    }).catch((error: Error) => {
-      console.error(error);
-      API.failure(res, i18n.t("databaseError"));
     });
   }
   else if (req.method == "POST") {
     const request: APIRequest = req.body;
     i18n.changeLanguage(request.lang || "en");
     const userId: number = await token.checkToken(request.token as string) || -1;
-    if (userId == -1) {
-      API.failure(res, i18n.t("unauthorized"));
-      return;
+    if (userId === -1) {
+      API.failure(res, i18n.t("unauthorized")); return;
     }
     if ((await permission.getPermission(userId)).checkPermission(permission.PERMISSION_FINANCE_WRITE) == false) {
       API.failure(res, i18n.t("permissionDenied"));
@@ -39,7 +34,7 @@ export default async function handler(
     const date = request.params.date;
     const money = request.params.money;
     const detail = request.params.detail;
-    if (typeof date !== "string" || typeof money !== "string" || typeof detail !== "string") {
+    if (typeof date !== "string" || typeof money !== "number" || typeof detail !== "string") {
       API.failure(res, i18n.t("invalidParameter")); return;
     }
 
@@ -49,16 +44,12 @@ export default async function handler(
       detail,
     }).then(() => {
       API.success(res, i18n.t("financeCreateSuccess"));
-    }).catch((error: Error) => {
-      console.error(error);
-      API.failure(res, i18n.t("databaseError"));
     });
   }
   else if (req.method == "DELETE") {
     i18n.changeLanguage(req.query.lang as string || "en");
     if (await token.checkToken(req.query.token as string) == null) {
-      API.failure(res, i18n.t("unauthorized"));
-      return;
+      API.failure(res, i18n.t("unauthorized")); return;
     }
     const financeId = req.query.financeId;
     if (typeof financeId !== "string" || !utilities.isValidNumber(financeId)) {
@@ -71,17 +62,13 @@ export default async function handler(
       },
     }).then(() => {
       API.success(res, i18n.t("financeDeleteSuccess"));
-    }).catch((error: Error) => {
-      console.error(error);
-      API.failure(res, i18n.t("databaseError"));
     });
   }
   else if (req.method == "PUT") {
     const request: APIRequest = req.body;
     i18n.changeLanguage(request.lang || "en");
     if (await token.checkToken(request.token as string) == null) {
-      API.failure(res, i18n.t("unauthorized"));
-      return;
+      API.failure(res, i18n.t("unauthorized")); return;
     }
     const money = request.params.money;
     const detail = request.params.detail;
@@ -99,9 +86,6 @@ export default async function handler(
       },
     }).then(() => {
       API.success(res), i18n.t("financeUpdateSuccess");
-    }).catch((error: Error) => {
-      console.error(error);
-      API.failure(res, i18n.t("databaseError"));
     });
   }
   else {

@@ -73,7 +73,7 @@ export default async function handler(
     await database.groupMemberModule.truncate();
     await database.privilegeRecordModule.truncate();
 
-    await database.userModule.create({ username: "langningchen", password: "1!2@3#qQwWeE", studentId: 6, permission: 5 });
+    await database.userModule.create({ username: "langningchen", password: "1!2@3#qQwWeE", studentId: 6, permission: 255 });
 
     for (const _ of Data.roles) {
         await database.roleModule.create({ roleId: _.id, roleName: _.name });

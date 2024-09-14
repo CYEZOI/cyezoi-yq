@@ -13,8 +13,7 @@ export default async function handler(
   if (req.method == "GET") {
     i18n.changeLanguage(req.query.lang as string || "en");
     if (await token.checkToken(req.query.token as string) == null) {
-      API.failure(res, i18n.t("unauthorized"));
-      return;
+      API.failure(res, i18n.t("unauthorized")); return;
     }
     const studentIdList = req.query.studentIdList;
 
@@ -48,9 +47,6 @@ export default async function handler(
           psychologicalGender: record.getDataValue("psychologicalGender"),
         });
       }
-    }).catch((error: Error) => {
-      console.error(error.name + "  " + error.message);
-      API.failure(res, i18n.t("databaseError"));
     });
     API.success(res, i18n.t("studentGetSuccess"), { student: student });
   }
@@ -59,7 +55,9 @@ export default async function handler(
     i18n.changeLanguage(request.lang || "en");
     const userId: number = await token.checkToken(request.token as string) || -1;
     let studentId: number | null = null;
-    if (userId !== -1) {
+    if (userId === -1) {
+      API.failure(res, i18n.t("unauthorized")); return;
+    } else {
       await userModule.findOne({
         where: {
           userId,
@@ -70,9 +68,6 @@ export default async function handler(
           return;
         }
         studentId = user.getDataValue("studentId");
-      }).catch(() => {
-        API.failure(res, i18n.t("databaseError"));
-        return;
       });
     }
 
@@ -92,9 +87,6 @@ export default async function handler(
         },
       }).then(() => {
         API.success(res, i18n.t("studentUpdateSuccess"));
-      }).catch((error: Error) => {
-        console.error(error.name + "  " + error.message);
-        API.failure(res, i18n.t("databaseError"));
       });
     }
     else if (typeof studentIdQuery === "number" && typeof studentName === "string" && typeof gender === "boolean") {
@@ -110,9 +102,6 @@ export default async function handler(
         },
       }).then(() => {
         API.success(res, i18n.t("studentUpdateSuccess"));
-      }).catch((error: Error) => {
-        console.error(error.name + "  " + error.message);
-        API.failure(res, i18n.t("databaseError"));
       });
     }
     else

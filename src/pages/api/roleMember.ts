@@ -12,8 +12,7 @@ export default async function handler(
   if (req.method == "GET") {
     i18n.changeLanguage(req.query.lang as string || "en");
     if (await token.checkToken(req.query.token as string) == null) {
-      API.failure(res, i18n.t("unauthorized"));
-      return;
+      API.failure(res, i18n.t("unauthorized")); return;
     }
     const studentIdList = req.query.studentIdList;
     const roleIdList = req.query.roleIdList;
@@ -57,9 +56,6 @@ export default async function handler(
           }],
         });
       }
-    }).catch((error: Error) => {
-      console.error(error.name + "  " + error.message);
-      API.failure(res, i18n.t("databaseError"));
     });
     API.success(res, i18n.t("roleMemberGetSuccess"), { student: studentData });
   }
@@ -67,8 +63,7 @@ export default async function handler(
     const request: APIRequest = req.body;
     i18n.changeLanguage(request.lang || "en");
     if (await token.checkToken(request.token as string) == null) {
-      API.failure(res, i18n.t("unauthorized"));
-      return;
+      API.failure(res, i18n.t("unauthorized")); return;
     }
     const student = request.params.student;
     const role = request.params.role;
@@ -83,16 +78,12 @@ export default async function handler(
       leader,
     }).then(() => {
       API.success(res, i18n.t("roleMemberCreateSuccess"));
-    }).catch((error: Error) => {
-      console.error(error.name + "  " + error.message);
-      API.failure(res, i18n.t("databaseError"));
     });
   }
   else if (req.method == "DELETE") {
     i18n.changeLanguage(req.query.lang as string || "en");
     if (await token.checkToken(req.query.token as string) == null) {
-      API.failure(res, i18n.t("unauthorized"));
-      return;
+      API.failure(res, i18n.t("unauthorized")); return;
     }
     const student = req.body.params.student;
     const role = req.body.params.role;
@@ -107,9 +98,6 @@ export default async function handler(
       },
     }).then(() => {
       API.success(res, i18n.t("roleMemberDeleteSuccess"));
-    }).catch((error: Error) => {
-      console.error(error.name + "  " + error.message);
-      API.failure(res, i18n.t("databaseError"));
     });
   }
   else {

@@ -3,7 +3,7 @@ import i18n from "@/i18n";
 import Head from "next/head";
 import { Alert } from "react-bootstrap";
 
-export default function error() {
+export default function error404() {
   const { t } = i18n;
 
   return (

@@ -3,6 +3,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { tokenModule, userModule } from "@/database";
 import i18n from "@/i18n";
 import { permission } from "@/permission";
+import { token } from "@/token";
 
 export default async function handler(
   req: NextApiRequest,
@@ -32,23 +33,8 @@ export default async function handler(
         return;
       }
       userId = user.getDataValue("userId");
-    }).catch((error: Error) => {
-      console.error(error);
-      API.failure(res, i18n.t("databaseError"));
     });
-
-    var token: string = "";
-    for (let i = 0; i < 64; i++) {
-      token += String.fromCharCode(Math.floor(Math.random() * 26) + 97);
-    }
-    await tokenModule.create({
-      userId,
-      token,
-    }).catch((error: Error) => {
-      console.error(error);
-      API.failure(res, i18n.t("databaseError"));
-    });
-    API.success(res, i18n.t("loginSuccess"), { userId, token });
+    API.success(res, i18n.t("loginSuccess"), { userId, token: await token.createToken(userId) });
   }
   else {
     API.failure(res, i18n.t("invalidMethod"));

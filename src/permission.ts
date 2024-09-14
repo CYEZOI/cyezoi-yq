@@ -9,6 +9,7 @@ export class permission {
     public static PERMISSION_UPDATE_PRIVILEGE = 5;
     public static PERMISSION_UPDATE_OTHER_INFO = 6;
     public static PERMISSION_UPDATE_STUDENT_BASIC_INFO = 7;
+    public static PERMISSION_LOGOUT_OTHER = 8;
 
     private permissionNumber: number;
     constructor(permissionNumber: number) { this.permissionNumber = permissionNumber; }
@@ -22,8 +23,6 @@ export class permission {
             if (user) {
                 permissionNumber = user.getDataValue("permission");
             }
-        }).catch(() => {
-            permissionNumber = 0;
         });
         return new permission(permissionNumber);
     }
