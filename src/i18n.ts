@@ -126,11 +126,17 @@ const resources = {
       "studentUpdateSuccess": "Update student successfully",
       "logoutSuccess": "Logout successfully",
       "logoutOther": "Logout other user",
+      "uploadImage": "Upload image",
+      "dragToUpload": "Drag file here to upload",
+      "releaseToUpload": "Release to upload",
     },
   },
   zh: {
     translation: {
       "logoutOther": "登出其他用户",
+      "dragToUpload": "拖动文件到此处上传",
+      "releaseToUpload": "释放以上传",
+      "uploadImage": "上传图片",
       "logoutSuccess": "登出成功",
       "404": "404 未找到",
       "404Description": "您要查找的页面未找到。",
