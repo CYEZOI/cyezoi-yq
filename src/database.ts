@@ -187,3 +187,21 @@ export const tokenModule = sequelize.define(
         },
     },
 );
+
+export const imageModule = sequelize.define(
+    "image",
+    {
+        imageId: {
+            type: DataTypes.STRING,
+            primaryKey: true,
+        },
+        userId: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+        },
+        image: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
+    },
+);

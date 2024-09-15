@@ -1,11 +1,9 @@
 import { tokenModule, userModule } from "./database";
+import { utilities } from "./utilities";
 
 export class token {
     public static async createToken(userId: number): Promise<string> {
-        var token: string = "";
-        for (let i = 0; i < 64; i++) {
-            token += String.fromCharCode(Math.floor(Math.random() * 26) + 97);
-        }
+        var token: string = utilities.generateRandomString();
         await tokenModule.create({
             userId,
             token,

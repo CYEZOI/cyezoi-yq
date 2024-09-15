@@ -2,7 +2,7 @@ import type { AppProps } from "next/app";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import NavDropdown from "react-bootstrap/NavDropdown";
-import { Book, BoxArrowRight, BoxArrowUpRight, CashCoin, CloudArrowUp, HouseDoor, Moon, PencilSquare, People, Person, PersonBadge, PersonVcard, PersonWorkspace, Sun, Toggles, Translate } from "react-bootstrap-icons";
+import { Book, BoxArrowRight, BoxArrowUpRight, CashCoin, HouseDoor, Image, Moon, PencilSquare, People, Person, PersonBadge, PersonVcard, PersonWorkspace, Sun, Toggles, Translate } from "react-bootstrap-icons";
 import i18n from "@/i18n";
 import "bootstrap/dist/css/bootstrap.css";
 import { useEffect, useState } from "react";
@@ -64,7 +64,7 @@ export default function App({ Component, pageProps }: AppProps) {
               <NavDropdown.Item href="/privilegeRecord"><Book className="me-1" />{t("privilegeRecord")}</NavDropdown.Item>
             </NavDropdown>
             <Nav.Link href="/finance"><CashCoin className="me-1" />{t("finance")}</Nav.Link>
-            <Nav.Link href="/uploadImage"><CloudArrowUp className="me-1" />{t("uploadImage")}</Nav.Link>
+            <Nav.Link href="/image"><Image className="me-1" />{t("image")}</Nav.Link>
             <Nav.Link href="https://langningchen.sharepoint.com/:f:/g/ErK-j2zEQDRMjhUFSqFC2aIBXnlcLPhx-8-SwIZMJ9hMGg?e=fmeiyC" target="_blank"><BoxArrowUpRight className="me-1" />{t("resource")}</Nav.Link>
           </Nav>
           <Nav >

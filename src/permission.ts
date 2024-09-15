@@ -10,6 +10,8 @@ export class permission {
     public static PERMISSION_UPDATE_OTHER_INFO = 6;
     public static PERMISSION_UPDATE_STUDENT_BASIC_INFO = 7;
     public static PERMISSION_LOGOUT_OTHER = 8;
+    public static PERMISSION_UPLOAD_IMAGE = 9;
+    public static PERMISSION_LIST_ALL_IMAGE = 10;
 
     private permissionNumber: number;
     constructor(permissionNumber: number) { this.permissionNumber = permissionNumber; }
