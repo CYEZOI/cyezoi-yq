@@ -14,6 +14,7 @@ const permissionName = [
     "updatePermission",
     "updateOtherInfo",
     "changeStudentBasicInfo",
+    "logoutOther",
 ];
 
 export default function permission() {

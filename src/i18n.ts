@@ -125,10 +125,12 @@ const resources = {
       "changeInfo": "Change information",
       "studentUpdateSuccess": "Update student successfully",
       "logoutSuccess": "Logout successfully",
+      "logoutOther": "Logout other user",
     },
   },
   zh: {
     translation: {
+      "logoutOther": "登出其他用户",
       "logoutSuccess": "登出成功",
       "404": "404 未找到",
       "404Description": "您要查找的页面未找到。",
