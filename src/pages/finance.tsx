@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
@@ -6,14 +6,19 @@ import * as yup from "yup";
 import { Formik } from "formik";
 import i18n from "@/i18n";
 import Head from "next/head";
-import { Col, Row, Table } from "react-bootstrap";
+import { Col, Modal, Offcanvas, Row, Table } from "react-bootstrap";
 import { API } from "@/api";
 import useSWR from "swr";
 import { Bar, CartesianGrid, Line, BarChart, Tooltip, XAxis, YAxis, ResponsiveContainer, LineChart } from "recharts";
-import { Trash } from "react-bootstrap-icons";
+import { Image, Trash } from "react-bootstrap-icons";
+import styles from "./image.module.css";
 
 export default function finance() {
   const { t } = i18n;
+  const [showOffcanvas, setShowOffcanvas] = useState<number | null>(null);
+  const [showModal, setShowModal] = useState<number | null>(null);
+  const [imageId, setImageId] = useState<string | null>(null);
+
   const { data: financeData, mutate: financeMutate } = useSWR("finance", API.SWRGet);
   const financeDataProvider = financeData as {
     records: {
@@ -21,6 +26,7 @@ export default function finance() {
       date: string,
       money: number,
       detail: string,
+      image: string,
       createdAt: string,
     }[]
   }
@@ -38,6 +44,14 @@ export default function finance() {
   const mutate = () => {
     financeMutate();
     financeStaticsMutate();
+  };
+
+  const { data: imageData, mutate: imageMutate } = useSWR("image", API.SWRGet);
+  const imageDataProvider = imageData as {
+    records: {
+      imageId: string,
+      image: string,
+    }[]
   };
 
   return (
@@ -124,28 +138,95 @@ export default function finance() {
           <Line type="monotone" dataKey="balance" stroke="#ff7300" />
         </BarChart>
       </ResponsiveContainer>
+      <Modal show={showModal != null} onHide={() => setShowModal(null)} size="xl">
+        <Modal.Header closeButton>
+          <Modal.Title>{t("image")}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {imageDataProvider && <div className="d-flex flex-wrap mt-3">
+            {imageDataProvider.records.map((record) => {
+              const imageIdList = imageId?.split(",") || [];
+              return <div key={record.imageId}
+                className={styles.previewImage + " p-2"}
+                onClick={() => {
+                  imageIdList.includes(record.imageId) ? imageIdList.splice(imageIdList.indexOf(record.imageId), 1) : imageIdList.push(record.imageId);
+                  setImageId(imageIdList.join(","));
+                }}>
+                <img src={record.image} alt={record.imageId} className={"rounded h-100 border border-3" +
+                  (imageIdList.includes(record.imageId) ? " border-primary" : "")} />
+              </div>
+            })}
+          </div>
+          }
+        </Modal.Body>
+        <Modal.Footer>
+          <Button onClick={() => {
+            API.Put("finance", {
+              params: {
+                financeId: showModal,
+                image: imageId
+              }
+            }, {
+              success: () => {
+                mutate();
+              }, showSuccess: true,
+            });
+            setShowModal(null);
+          }}>{t("save")}</Button>
+        </Modal.Footer>
+      </Modal>
+      <Offcanvas show={showOffcanvas != null} onHide={() => setShowOffcanvas(null)}>
+        <Offcanvas.Header closeButton>
+          <Offcanvas.Title>{t("finance")}</Offcanvas.Title>
+        </Offcanvas.Header>
+        <Offcanvas.Body>
+          {(() => {
+            const finance = financeDataProvider?.records.find(record => record.financeId == showOffcanvas);
+            return finance ? <>
+              {finance.image && finance.image.split(",").map((image, index) => (
+                <img key={index} src={"/api/image?imageId=" + image} alt={finance.financeId + "-" + index} className="w-100 mb-2" />
+              ))}
+              <div>{t("date") + t("colon")}{new Date(finance.date).toLocaleDateString()}</div>
+              <div className="mt-1">{t("createdAt") + t("colon")}{new Date(finance.createdAt).toLocaleString()}</div>
+              <div className="mt-1">{t("amount") + t("colon")}{finance.money} {t("RMB")}</div>
+              <div className="mt-1">{t("reason") + t("colon")}{finance.detail}</div>
+              <div className="mt-3">
+                <Button onClick={() => {
+                  setImageId(finance.image);
+                  setShowModal(showOffcanvas);
+                  setShowOffcanvas(null);
+                }} variant="outline-primary" size="sm" className="me-2"><Image className="me-1" />{t("image")}</Button>
+                <Button onClick={() => {
+                  API.Delete("finance", { financeId: finance.financeId.toString() }, {
+                    success: () => {
+                      mutate();
+                      setShowOffcanvas(null);
+                    }, showSuccess: true,
+                  });
+                }} variant="danger" size="sm"><Trash className="me-1" />{t("delete")}</Button>
+              </div>
+            </> : null;
+          })()}
+        </Offcanvas.Body>
+      </Offcanvas>
       <Table>
         <thead>
           <tr>
             <th>{t("date")}</th>
             <th>{t("amount")}</th>
-            <th>{t("reason")}</th>
-            <th>{t("operation")}</th>
+            <th className="d-none d-md-table-cell">{t("reason")}</th>
           </tr>
         </thead>
         <tbody>
           {financeDataProvider && financeDataProvider.records.map((record) => (
-            <tr key={record.financeId} className={record.money > 0 ? "table-success" : "table-danger"}>
+            <tr key={record.financeId} className={record.money > 0 ? "table-success" : "table-danger"}
+              onClick={(e) => {
+                if (e.target instanceof HTMLButtonElement || e.target instanceof HTMLAnchorElement) return;
+                setShowOffcanvas(record.financeId);
+              }}>
               <td>{new Date(record.date).toLocaleDateString()}</td>
               <td>{record.money} {t("RMB")}</td>
-              <td>{record.detail}</td>
-              <td><Button onClick={() => {
-                API.Delete("finance", { financeId: record.financeId.toString() }, {
-                  success: () => {
-                    mutate();
-                  }
-                });
-              }} variant="danger" size="sm"><Trash className="me-1" />{t("delete")}</Button></td>
+              <td className="d-none d-md-table-cell">{record.detail}</td>
             </tr>
           ))}
         </tbody>

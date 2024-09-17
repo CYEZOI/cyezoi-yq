@@ -70,22 +70,20 @@ export default async function handler(
     if (await token.checkToken(request.token as string) == null) {
       API.failure(res, i18n.t("unauthorized")); return;
     }
-    const money = request.params.money;
-    const detail = request.params.detail;
     const financeId = request.params.financeId;
-    if (typeof money !== "number" || typeof detail !== "string" || typeof financeId !== "number") {
+    const image = request.params.image;
+    if (typeof financeId !== "number" || typeof image !== "string") {
       API.failure(res, i18n.t("invalidParameter")); return;
     }
 
     await financeModule.update({
-      money,
-      detail,
+      image,
     }, {
       where: {
         financeId,
       },
     }).then(() => {
-      API.success(res), i18n.t("financeUpdateSuccess");
+      API.success(res, i18n.t("financeUpdateSuccess"));
     });
   }
   else {

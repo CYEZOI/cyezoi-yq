@@ -23,8 +23,11 @@ export const financeModule = sequelize.define(
         },
         detail: {
             type: DataTypes.STRING,
-            allowNull: true,
+            allowNull: false,
         },
+        image: {
+            type: DataTypes.STRING,
+        }
     },
 );
 
