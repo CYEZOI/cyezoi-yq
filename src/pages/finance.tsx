@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
@@ -15,9 +15,9 @@ import styles from "./image.module.css";
 
 export default function finance() {
   const { t } = i18n;
-  const [showOffcanvas, setShowOffcanvas] = useState<number | null>(null);
-  const [showModal, setShowModal] = useState<number | null>(null);
-  const [imageId, setImageId] = useState<string | null>(null);
+  const [showOffcanvas, setShowOffcanvas] = React.useState<number | null>(null);
+  const [showModal, setShowModal] = React.useState<number | null>(null);
+  const [imageId, setImageId] = React.useState<string | null>(null);
 
   const { data: financeData, mutate: financeMutate } = useSWR("finance", API.SWRGet);
   const financeDataProvider = financeData as {
@@ -138,6 +138,28 @@ export default function finance() {
           <Line type="monotone" dataKey="balance" stroke="#ff7300" />
         </BarChart>
       </ResponsiveContainer>
+      <Table>
+        <thead>
+          <tr>
+            <th>{t("date")}</th>
+            <th>{t("amount")}</th>
+            <th className="d-none d-md-table-cell">{t("reason")}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {financeDataProvider && financeDataProvider.records.map((record) => (
+            <tr key={record.financeId} className={record.money > 0 ? "table-success" : "table-danger"}
+              onClick={(e) => {
+                if (e.target instanceof HTMLButtonElement || e.target instanceof HTMLAnchorElement) return;
+                setShowOffcanvas(record.financeId);
+              }}>
+              <td>{new Date(record.date).toLocaleDateString()}</td>
+              <td>{record.money} {t("RMB")}</td>
+              <td className="d-none d-md-table-cell">{record.detail}</td>
+            </tr>
+          ))}
+        </tbody>
+      </Table>
       <Modal show={showModal != null} onHide={() => setShowModal(null)} size="xl">
         <Modal.Header closeButton>
           <Modal.Title>{t("image")}</Modal.Title>
@@ -209,28 +231,6 @@ export default function finance() {
           })()}
         </Offcanvas.Body>
       </Offcanvas>
-      <Table>
-        <thead>
-          <tr>
-            <th>{t("date")}</th>
-            <th>{t("amount")}</th>
-            <th className="d-none d-md-table-cell">{t("reason")}</th>
-          </tr>
-        </thead>
-        <tbody>
-          {financeDataProvider && financeDataProvider.records.map((record) => (
-            <tr key={record.financeId} className={record.money > 0 ? "table-success" : "table-danger"}
-              onClick={(e) => {
-                if (e.target instanceof HTMLButtonElement || e.target instanceof HTMLAnchorElement) return;
-                setShowOffcanvas(record.financeId);
-              }}>
-              <td>{new Date(record.date).toLocaleDateString()}</td>
-              <td>{record.money} {t("RMB")}</td>
-              <td className="d-none d-md-table-cell">{record.detail}</td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
     </>
   );
 }

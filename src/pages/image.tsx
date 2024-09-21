@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import i18n from "@/i18n";
 import Head from "next/head";
 import { API } from "@/api";
@@ -31,11 +31,11 @@ export default function role() {
     }>;
   };
 
-  const [showOffcanvas, setShowOffcanvas] = useState<string | null>(null);
-  const [dragging, setDragging] = useState(false);
-  const [imageCount, setImageCount] = useState(0);
-  const [successCount, setSuccessCount] = useState(0);
-  const [failedCount, setFailedCount] = useState(0);
+  const [showOffcanvas, setShowOffcanvas] = React.useState<string | null>(null);
+  const [dragging, setDragging] = React.useState<boolean>(false);
+  const [imageCount, setImageCount] = React.useState<number>(0);
+  const [successCount, setSuccessCount] = React.useState<number>(0);
+  const [failedCount, setFailedCount] = React.useState<number>(0);
   var DragElement: EventTarget | null = null;
 
   const handleFile = (fileList: FileList) => {

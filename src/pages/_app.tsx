@@ -5,17 +5,18 @@ import NavDropdown from "react-bootstrap/NavDropdown";
 import { Book, BoxArrowRight, BoxArrowUpRight, CashCoin, HouseDoor, Image, Moon, PencilSquare, People, Person, PersonBadge, PersonVcard, PersonWorkspace, Sun, Toggles, Translate } from "react-bootstrap-icons";
 import i18n from "@/i18n";
 import "bootstrap/dist/css/bootstrap.css";
-import { useEffect, useState } from "react";
+import React from "react";
 import { Alert, Container, Stack } from "react-bootstrap";
 import { pipeInstance } from "@/pipe";
 import Link from "next/link";
+import Script from "next/script";
 
 export default function App({ Component, pageProps }: AppProps) {
-  const [language, setLanguage] = useState<string>("en");
-  const [userId, setUserId] = useState<string>("");
-  const [studentName, setStudentName] = useState<string>("");
-  const [alertList, setAlertList] = useState<{ message: string, variant: string }[]>([]);
-  const [mode, setMode] = useState<string>("light");
+  const [language, setLanguage] = React.useState<string>("en");
+  const [userId, setUserId] = React.useState<string>("");
+  const [studentName, setStudentName] = React.useState<string>("");
+  const [alertList, setAlertList] = React.useState<{ message: string, variant: string }[]>([]);
+  const [mode, setMode] = React.useState<string>("light");
   i18n.changeLanguage(language);
   const { t } = i18n;
   const handleMode = (mode: string) => {
@@ -29,7 +30,7 @@ export default function App({ Component, pageProps }: AppProps) {
     setLanguage(language);
   }
 
-  useEffect(() => {
+  React.useEffect(() => {
     typeof localStorage !== "undefined" && handleMode(localStorage.getItem("mode") || "light");
     typeof document !== "undefined" && handleLanguage(localStorage.getItem("language") || "en");
     typeof localStorage !== "undefined" && setUserId(localStorage.getItem("userId") || "");
@@ -111,5 +112,14 @@ export default function App({ Component, pageProps }: AppProps) {
         </center>
       </div>
     </Container>
+    <Script>
+      {`
+(function(c,l,a,r,i,t,y){
+  c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+  t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+  y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+})(window, document, "clarity", "script", "ns5lmumdq2");
+    `}
+    </Script>
   </>;
 }

@@ -4,14 +4,14 @@ import { Formik } from "formik";
 import * as yup from "yup";
 import { API } from "@/api";
 import { Button, FloatingLabel, Form, Nav } from "react-bootstrap";
-import { useEffect, useState } from "react";
+import React from "react";
 import useSWR from "swr";
 
 export default function password() {
   const { t } = t18n;
 
-  const [tab, setTab] = useState<string>("changeInfo");
-  const [userId, setUserId] = useState<string>("");
+  const [tab, setTab] = React.useState<string>("changeInfo");
+  const [userId, setUserId] = React.useState<string>("");
   const { data: userData } = useSWR(userId ? "user?userIdList=" + userId : null, API.SWRGet);
   const userDataProvider = userData as {
     user: Array<{
@@ -36,7 +36,7 @@ export default function password() {
     }>;
   };
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (typeof location !== "undefined") {
       const searchParams = new URLSearchParams(location.search);
       setUserId(searchParams.get("userId") || "");

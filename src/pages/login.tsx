@@ -4,15 +4,15 @@ import { Formik } from "formik";
 import * as yup from "yup";
 import { API } from "@/api";
 import { Button, FloatingLabel, Form } from "react-bootstrap";
-import { useEffect, useState } from "react";
+import React from "react";
 
 export default function login() {
   const { t } = t18n;
 
-  const [defaultUsername, setDefaultUsername] = useState<string>("");
-  const [defaultPassword, setDefaultPassword] = useState<string>("");
+  const [defaultUsername, setDefaultUsername] = React.useState<string>("");
+  const [defaultPassword, setDefaultPassword] = React.useState<string>("");
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (typeof location !== "undefined") {
       const searchParams = new URLSearchParams(location.search);
       setDefaultUsername(searchParams.get("username") || "");

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import i18n from "@/i18n";
 import Head from "next/head";
 import { Badge, Card, Pagination } from "react-bootstrap";
@@ -7,7 +7,7 @@ import { API } from "@/api";
 
 export default function privilegeRecord() {
   const { t } = i18n;
-  const [page, setPage] = useState<number>(1);
+  const [page, setPage] = React.useState<number>(1);
 
   const { data: privilegeRecordData } = useSWR("privilegeRecord?page=" + page, API.SWRGet);
   const privilegeRecordDataProvider = privilegeRecordData as {

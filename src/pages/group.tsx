@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import i18n from "@/i18n";
 import Head from "next/head";
 import useSWR from "swr";
@@ -11,7 +11,7 @@ export default function group() {
   const { t } = i18n;
 
   const [groupId, setGroupId] = React.useState<number | null>(null);
-  useEffect(() => {
+  React.useEffect(() => {
     const tempGroupId: string | null = new URLSearchParams(window.location.search).get("groupId");
     if (tempGroupId != null)
       setGroupId(parseInt(tempGroupId));

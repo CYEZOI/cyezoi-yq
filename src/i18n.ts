@@ -141,10 +141,14 @@ const resources = {
       "userNotFound": "User not found",
       "userUpdateSuccess": "Update user successfully",
       "welcomeDescription": "Welcome to CYEZOI-YQ, the official website of the YQ class of Cao Yang No.2 Middle School. We are sorry to inform you that the resource content needs to provide an email to the developer and log in to the Microsoft account to view due to copyright.",
+      "deleteUserConfirm": "Are you sure to delete user {{username}}?",
+      "cancel": "Cancel",
     },
   },
   zh: {
     translation: {
+      "cancel": "取消",
+      "deleteUserConfirm": "确定删除用户{{username}}吗？",
       "404": "404 未找到",
       "404Description": "您要查找的页面未找到。",
       "500": "500 服务器内部错误",

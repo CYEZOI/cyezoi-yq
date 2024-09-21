@@ -1,7 +1,7 @@
 import Head from "next/head";
 import t18n from "@/i18n";
 import { API } from "@/api";
-import { useEffect, useState } from "react";
+import React from "react";
 import useSWR from "swr";
 import { Button, Form, Table } from "react-bootstrap";
 
@@ -20,8 +20,8 @@ const permissionName = [
 
 export default function permission() {
     const { t } = t18n;
-    const [userId, setUserId] = useState<number | null>(null);
-    const [permission, setPermission] = useState<number>(-1);
+    const [userId, setUserId] = React.useState<number | null>(null);
+    const [permission, setPermission] = React.useState<number>(-1);
     const { data: permissionData } = useSWR(userId ? "user?userIdList=" + userId : null, API.SWRGet);
     const permissionDataProvider = permissionData as {
         user: Array<{
@@ -43,7 +43,7 @@ export default function permission() {
     }
     studentDataProvider && permission == -1 && setPermission(permissionDataProvider.user[0].permission);
 
-    useEffect(() => {
+    React.useEffect(() => {
         if (typeof location !== "undefined") {
             const searchParams = new URLSearchParams(location.search);
             setUserId(parseInt(searchParams.get("userId") || ""));

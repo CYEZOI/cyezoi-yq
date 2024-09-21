@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import i18n from "@/i18n";
 import Head from "next/head";
 import { Badge, Col, Placeholder, Table } from "react-bootstrap";
@@ -9,8 +9,8 @@ import { GenderFemale, GenderMale } from "react-bootstrap-icons";
 export default function student() {
   const { t } = i18n;
 
-  const [studentName, setStudentName] = useState<string | null>(null);
-  useEffect(() => {
+  const [studentName, setStudentName] = React.useState<string | null>(null);
+  React.useEffect(() => {
     typeof localStorage !== "undefined" && setStudentName(localStorage.getItem("studentName"));
   });
 
