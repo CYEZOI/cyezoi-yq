@@ -49,8 +49,8 @@ export default function App({ Component, pageProps }: AppProps) {
 
   return <>
     <Head>
-      <Script async src="https://www.googletagmanager.com/gtag/js?id=G-5691V2HGNT" />
-      <Script>
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-5691V2HGNT"></script>
+      <script>
         {`
 window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}
@@ -58,7 +58,7 @@ gtag('js', new Date());
 
 gtag('config', 'G-5691V2HGNT');
   `}
-      </Script>
+      </script>
     </Head>
     <Navbar expand="lg" className="bg-body-tertiary mb-3" >
       <Container>
