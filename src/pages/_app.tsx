@@ -2,7 +2,7 @@ import type { AppProps } from "next/app";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import NavDropdown from "react-bootstrap/NavDropdown";
-import { Book, BoxArrowRight, BoxArrowUpRight, CashCoin, HouseDoor, Image, Moon, PencilSquare, People, Person, PersonBadge, PersonVcard, PersonWorkspace, Sun, Toggles, Translate } from "react-bootstrap-icons";
+import { Book, BoxArrowRight, BoxArrowUpRight, CashCoin, FileEarmarkPdf, HouseDoor, Image, Moon, PencilSquare, People, Person, PersonBadge, PersonVcard, PersonWorkspace, Sun, Toggles, Tools, Translate } from "react-bootstrap-icons";
 import i18n from "@/i18n";
 import "bootstrap/dist/css/bootstrap.css";
 import React from "react";
@@ -78,7 +78,10 @@ gtag('config', 'G-5691V2HGNT');
               <NavDropdown.Item href="/privilegeRecord"><Book className="me-1" />{t("privilegeRecord")}</NavDropdown.Item>
             </NavDropdown>
             <Nav.Link href="/finance"><CashCoin className="me-1" />{t("finance")}</Nav.Link>
-            <Nav.Link href="/image"><Image className="me-1" />{t("image")}</Nav.Link>
+            <NavDropdown title={<span><Tools className="me-1" />{t("tools")}</span>} className="me-1">
+              <NavDropdown.Item href="/image"><Image className="me-1" />{t("image")}</NavDropdown.Item>
+              <NavDropdown.Item href="/pdf"><FileEarmarkPdf className="me-1" />{t("removePdfAnnotation")}</NavDropdown.Item>
+            </NavDropdown>
             <Nav.Link href="https://langningchen.sharepoint.com/:f:/g/ErK-j2zEQDRMjhUFSqFC2aIBXnlcLPhx-8-SwIZMJ9hMGg?e=fmeiyC" target="_blank"><BoxArrowUpRight className="me-1" />{t("resource")}</Nav.Link>
           </Nav>
           <Nav >
