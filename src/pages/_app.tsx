@@ -50,15 +50,15 @@ export default function App({ Component, pageProps }: AppProps) {
   return <>
     <Head>
       <script async src="https://www.googletagmanager.com/gtag/js?id=G-5691V2HGNT"></script>
-      <script>
-        {`
+      <script dangerouslySetInnerHTML={{
+        __html: `
 window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
 
 gtag('config', 'G-5691V2HGNT');
-  `}
-      </script>
+        `
+      }} />
     </Head>
     <Navbar expand="lg" className="bg-body-tertiary mb-3" >
       <Container>
