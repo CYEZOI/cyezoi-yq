@@ -1,1 +1,0 @@
-self.__REACT_LOADABLE_MANIFEST="{\"pages/profile/[userId].tsx -> react-markdown\":{\"id\":\"pages/profile/[userId].tsx -> react-markdown\",\"files\":[\"static/chunks/node_modules_pnpm_react-markdown_10_1_0__types_react_18_3_23_react_18_3_1_node_modules_react--fbdf8f.js\"]}}"
