@@ -1,0 +1,109 @@
+/* 修复 ReactMde 编辑器样式 */
+.markdownEditor {
+  min-height: 400px;
+}
+
+/* 隐藏多余的项目符号 */
+.markdownEditor :global(.mde-header) ul {
+  list-style: none !important;
+  padding-left: 0 !important;
+  margin: 0 !important;
+}
+
+.markdownEditor :global(.mde-header) li {
+  display: inline-block !important;
+  list-style: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.markdownEditor :global(.mde-header) li::before {
+  content: none !important;
+}
+
+/* 修复工具栏按钮样式 */
+.markdownEditor :global(.mde-header-group) {
+  display: flex;
+  gap: 4px;
+  margin-right: 8px;
+}
+
+.markdownEditor :global(.mde-header-item) {
+  border: 1px solid #ccc;
+  background: #fff;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.markdownEditor :global(.mde-header-item:hover) {
+  background-color: #f8f9fa;
+}
+
+.markdownEditor :global(.mde-header-item.selected) {
+  background-color: #007bff;
+  color: white;
+}
+
+/* 修复文本区域样式 */
+.markdownEditor :global(.mde-text) {
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 14px;
+  line-height: 1.5;
+  padding: 12px;
+  resize: vertical;
+  min-height: 300px;
+}
+
+.markdownEditor :global(.mde-text:focus) {
+  outline: none;
+  border-color: #80bdff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* 修复预览区域样式 */
+.markdownEditor :global(.mde-preview) {
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  padding: 12px;
+  min-height: 300px;
+  background-color: #fff;
+}
+
+/* 修复标签页样式 */
+.markdownEditor :global(.mde-tabs) {
+  border-bottom: 1px solid #dee2e6;
+  margin-bottom: 0;
+}
+
+.markdownEditor :global(.mde-tab) {
+  background: none;
+  border: none;
+  padding: 8px 16px;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  font-weight: 500;
+}
+
+.markdownEditor :global(.mde-tab.selected) {
+  border-bottom-color: #007bff;
+  color: #007bff;
+}
+
+.markdownEditor :global(.mde-tab:hover) {
+  background-color: #f8f9fa;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .markdownEditor :global(.mde-header) {
+    flex-wrap: wrap;
+  }
+  
+  .markdownEditor :global(.mde-header-group) {
+    margin-bottom: 4px;
+  }
+}

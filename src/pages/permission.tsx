@@ -58,7 +58,9 @@ export default function permission() {
                 <title>{t("permission") + " - " + t("brand")}</title>
             </Head>
             <h3>
-                {t("permission")}{studentDataProvider ? " - " + studentDataProvider.student.map(student => student.studentName).join(", ") : null}
+                {t("permission")}
+                {studentDataProvider && studentDataProvider.student.length > 0 &&
+                    " - " + studentDataProvider.student.find(student => student.studentId === permissionDataProvider.user[0].studentId)?.studentName}
             </h3>
             {permissionDataProvider && <Table>
                 <thead>

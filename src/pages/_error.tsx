@@ -1,22 +1,41 @@
-// import React from "react";
-// import i18n from "@/i18n";
-// import Head from "next/head";
-// import { Alert } from "react-bootstrap";
+import React from "react";
+import { NextPageContext } from "next";
+import { Container, Alert } from "react-bootstrap";
 
-// export default function error() {
-//   const { t } = i18n;
+interface ErrorProps {
+  statusCode?: number;
+  hasGetInitialProps?: boolean;
+  err?: Error;
+}
 
-//   return (
-//     <>
-//       <Head>
-//         <title>{t("error") + " - " + t("brand")}</title>
-//       </Head>
-//       <div>
-//         {/* <Alert variant="danger">
-//           <Alert.Heading>{t("error")}</Alert.Heading>
-//           <p>{t("errorDescription")}</p>
-//         </Alert> */}
-//       </div>
-//     </>
-//   );
-// }
+function Error({ statusCode, hasGetInitialProps, err }: ErrorProps) {
+  return (
+    <Container className="my-4">
+      <Alert variant="danger">
+        <Alert.Heading>
+          {statusCode ? `服务器错误 ${statusCode}` : "客户端错误"}
+        </Alert.Heading>
+        <p>
+          {statusCode === 404
+            ? "找不到页面"
+            : statusCode === 500
+            ? "服务器内部错误"
+            : "发生了一个错误"}
+        </p>
+        {err && process.env.NODE_ENV === "development" && (
+          <details>
+            <summary>错误详情</summary>
+            <pre>{err.message}</pre>
+          </details>
+        )}
+      </Alert>
+    </Container>
+  );
+}
+
+Error.getInitialProps = ({ res, err }: NextPageContext) => {
+  const statusCode = res ? res.statusCode : err ? err.statusCode : 404;
+  return { statusCode };
+};
+
+export default Error;
