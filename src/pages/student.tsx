@@ -23,33 +23,6 @@ export default function student() {
     }>;
   };
 
-  const { data: groupMemberData } = useSWR(() => {
-    if (!studentDataProvider) return null;
-    const student = studentDataProvider.student.map(student => student.studentId).join(",");
-    return student ? "groupMember?student=" + student : null;
-  }, API.SWRGet);
-  const groupMemberDataProvider = groupMemberData as {
-    student: Array<{
-      studentId: number;
-      group: Array<{
-        groupId: number;
-        leader: boolean;
-      }>;
-    }>;
-  };
-
-  const { data: groupData } = useSWR(() => {
-    if (!groupMemberDataProvider) return null;
-    const group = groupMemberDataProvider.student.map(groupMember => groupMember.group.map(group => group.groupId)).join(",");
-    return "group?groupIdList=" + group;
-  }, API.SWRGet);
-  const groupDataProvider = groupData as {
-    group: Array<{
-      groupId: number;
-      groupName: string;
-    }>;
-  };
-
   const { data: roleMemberData } = useSWR(() => {
     if (!studentDataProvider) return null;
     const student = studentDataProvider.student.map(student => student.studentId).join(",");
@@ -97,13 +70,6 @@ export default function student() {
               <td>{student["studentId"]}</td>
               <td>
                 {student["studentName"]}
-                {groupMemberDataProvider ? groupMemberDataProvider.student.filter(groupMember => groupMember.studentId == student["studentId"]).map(groupMember => (
-                  groupMember.group.map(group => (
-                    <Badge className="ms-2" key={group.groupId} bg={group.leader ? "primary" : "secondary"} role="button" onClick={() => { window.location.href = "/group?groupId=" + group.groupId; }}>
-                      {groupDataProvider ? groupDataProvider.group.filter(groupData => groupData.groupId == group.groupId).map(groupData => groupData.groupName) : t("group") + " " + group.groupId}
-                    </Badge>
-                  ))
-                )) : <Placeholder className="ms-2" animation="wave"><Placeholder as={Col} xs={3} /></Placeholder>}
                 {roleMemberDataProvider ? roleMemberDataProvider.student.filter(roleMember => roleMember.studentId == student["studentId"]).map(roleMember => (
                   roleMember.role.map(role => (
                     <Badge className="ms-2" key={role.roleId} role="button" onClick={() => { window.location.href = "/role?roleId=" + role.roleId; }}>

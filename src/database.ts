@@ -5,32 +5,6 @@ export const sequelize = new Sequelize({
     storage: "db/yq.sqlite",
 })
 
-export const financeModule = sequelize.define(
-    "finance",
-    {
-        financeId: {
-            type: DataTypes.INTEGER,
-            primaryKey: true,
-            autoIncrement: true,
-        },
-        date: {
-            type: DataTypes.DATEONLY,
-            allowNull: false,
-        },
-        money: {
-            type: DataTypes.INTEGER,
-            allowNull: false,
-        },
-        detail: {
-            type: DataTypes.STRING,
-            allowNull: false,
-        },
-        image: {
-            type: DataTypes.STRING,
-        }
-    },
-);
-
 export const studentModule = sequelize.define(
     "student",
     {
@@ -50,36 +24,6 @@ export const studentModule = sequelize.define(
             type: DataTypes.STRING,
             allowNull: true,
         }
-    },
-);
-
-export const groupModule = sequelize.define(
-    "group",
-    {
-        groupId: {
-            type: DataTypes.INTEGER,
-            primaryKey: true,
-        },
-        groupName: {
-            type: DataTypes.STRING,
-            allowNull: false,
-        },
-    },
-);
-
-export const groupMemberModule = sequelize.define(
-    "groupMember",
-    {
-        group: {
-            type: DataTypes.INTEGER,
-        },
-        student: {
-            type: DataTypes.INTEGER,
-        },
-        leader: {
-            type: DataTypes.BOOLEAN,
-            allowNull: false,
-        },
     },
 );
 

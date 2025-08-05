@@ -10,7 +10,6 @@ import { Alert, Container, Stack } from "react-bootstrap";
 import { pipeInstance } from "@/pipe";
 import Link from "next/link";
 import Script from "next/script";
-import Head from "next/head";
 
 export default function App({ Component, pageProps }: AppProps) {
   const [language, setLanguage] = React.useState<string>("en");
@@ -48,18 +47,16 @@ export default function App({ Component, pageProps }: AppProps) {
   }, []);
 
   return <>
-    <Head>
-      <script async src="https://www.googletagmanager.com/gtag/js?id=G-5691V2HGNT"></script>
-      <script dangerouslySetInnerHTML={{
-        __html: `
+    <Script async src="https://www.googletagmanager.com/gtag/js?id=G-5691V2HGNT"></Script>
+    <Script dangerouslySetInnerHTML={{
+      __html: `
 window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
 
 gtag('config', 'G-5691V2HGNT');
-        `
-      }} />
-    </Head>
+      `
+    }} />
     <Navbar expand="lg" className="bg-body-tertiary mb-3" >
       <Container>
         <Navbar.Brand>
@@ -72,12 +69,10 @@ gtag('config', 'G-5691V2HGNT');
             <Nav.Link href="/"><HouseDoor className="me-1" />{t("home")}</Nav.Link>
             <NavDropdown title={<span><PersonWorkspace className="me-1" />{t("personal")}</span>} className="me-1">
               <NavDropdown.Item href="/student"><Person className="me-1" />{t("student")}</NavDropdown.Item>
-              <NavDropdown.Item href="/group"><People className="me-1" />{t("group")}</NavDropdown.Item>
               <NavDropdown.Item href="/role"><PersonVcard className="me-1" />{t("role")}</NavDropdown.Item>
               <NavDropdown.Item href="/user"><PersonBadge className="me-1" />{t("user")}</NavDropdown.Item>
               <NavDropdown.Item href="/privilegeRecord"><Book className="me-1" />{t("privilegeRecord")}</NavDropdown.Item>
             </NavDropdown>
-            <Nav.Link href="/finance"><CashCoin className="me-1" />{t("finance")}</Nav.Link>
             <NavDropdown title={<span><Tools className="me-1" />{t("tools")}</span>} className="me-1">
               <NavDropdown.Item href="/image"><Image className="me-1" />{t("image")}</NavDropdown.Item>
               <NavDropdown.Item href="/pdf"><FileEarmarkPdf className="me-1" />{t("removePdfAnnotation")}</NavDropdown.Item>
@@ -135,7 +130,7 @@ gtag('config', 'G-5691V2HGNT');
   t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
   y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
 })(window, document, "clarity", "script", "ns5lmumdq2");
-    `}
+      `}
     </Script>
   </>;
 }

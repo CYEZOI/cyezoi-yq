@@ -15,17 +15,6 @@ export default async function handler(
     if (await token.checkToken(req.query.token as string) == null) {
       API.failure(res, i18n.t("unauthorized")); return;
     }
-    const studentIdList = req.query.studentIdList;
-
-    let studentId: Array<number> = [];
-    if (typeof studentIdList == "string") {
-      for (const _ of studentIdList.split(",")) {
-        if (!utilities.isValidNumber(_)) {
-          API.failure(res, i18n.t("invalidParameter")); return;
-        }
-        studentId.push(parseInt(_));
-      }
-    }
     var student: Array<{
       studentId: number,
       studentName: string,
@@ -33,11 +22,11 @@ export default async function handler(
       psychologicalGender: string,
     }> = [];
     await studentModule.findAll({
-      ...studentId.length > 0 && {
-        where: {
-          studentId,
-        },
-      },
+      // ...studentId.length > 0 && {
+      //   where: {
+      //     studentId,
+      //   },
+      // },
     }).then(records => {
       for (const record of records) {
         student.push({

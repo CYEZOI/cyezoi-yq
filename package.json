@@ -10,28 +10,28 @@
   },
   "dependencies": {
     "@types/crypto-js": "^4.2.2",
-    "bootstrap": "^5.3.3",
+    "bootstrap": "^5.3.7",
     "crypto-js": "^4.2.0",
     "formik": "^2.4.6",
-    "i18next": "^23.14.0",
+    "i18next": "^23.16.8",
     "next": "14.2.21",
     "pdf-lib": "^1.17.1",
-    "react": "^18",
-    "react-bootstrap": "^2.10.4",
-    "react-bootstrap-icons": "^1.11.4",
-    "react-dom": "^18",
-    "react-i18next": "^15.0.1",
-    "recharts": "^2.12.7",
-    "sequelize": "^6.37.3",
+    "react": "^18.3.1",
+    "react-bootstrap": "^2.10.10",
+    "react-bootstrap-icons": "^1.11.6",
+    "react-dom": "^18.3.1",
+    "react-i18next": "^15.6.1",
+    "recharts": "^2.15.4",
+    "sequelize": "^6.37.7",
     "sqlite3": "^5.1.7",
-    "swr": "^2.2.5",
-    "yup": "^1.4.0"
+    "swr": "^2.3.4",
+    "yup": "^1.7.0"
   },
   "devDependencies": {
     "@types/bootstrap": "^5.2.10",
-    "@types/node": "^20",
-    "@types/react": "^18",
-    "@types/react-dom": "^18",
-    "typescript": "^5"
+    "@types/node": "^20.19.9",
+    "@types/react": "^18.3.23",
+    "@types/react-dom": "^18.3.7",
+    "typescript": "^5.9.2"
   }
 }
